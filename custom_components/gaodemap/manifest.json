@@ -1,0 +1,9 @@
+{
+  "domain": "gaodemap",
+  "name": "gaodemap",
+  "documentation": "https://github.com/dscao/gaodemap",
+  "dependencies": [
+    "zone"
+  ],
+  "codeowners": ["@dscao"]
+}
