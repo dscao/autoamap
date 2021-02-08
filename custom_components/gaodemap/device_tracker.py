@@ -3,7 +3,7 @@ Support for gaodemap
 # Author:
     dscao
 # Created:
-    2021/2/4
+    2021/2/8
 配置格式：
 device_tracker: 
   - platform: gaodemap
@@ -48,17 +48,24 @@ from homeassistant.util.location import distance
 
 TYPE_GEOFENCE = "Geofence"
 
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 _Log=logging.getLogger(__name__)
 
 COMPONENT_REPO = 'https://github.com/dscao/gaodemap/'
-DEFAULT_SCAN_INTERVAL = timedelta(seconds=60)
+DEFAULT_SCAN_INTERVAL = timedelta(seconds=30)
 ICON = 'mdi:car'
 
 DEFAULT_NAME = 'gaodemap'
 KEY = 'key'
 SESSIONID = 'sessionid'
 PARAMDATA = 'paramdata'
+
+lastofflinetime = "未知"
+lastonlinetime = "未知"
+laststoptime = "未知"
+lastlat = "未知"
+lastlon = "未知"
+runorstop = "未知"
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 	vol.Required(KEY): cv.string,
@@ -93,6 +100,7 @@ class GaodeDeviceScanner(DeviceScanner):
         self._sessionid = sessionid
         self._paramdata = paramdata
         self._state = None
+        self._isonline = "no"
         self.attributes = {}
     
         
@@ -106,6 +114,12 @@ class GaodeDeviceScanner(DeviceScanner):
     
     async def async_update_info(self, now=None):
         """Get the gps info."""
+        global lastofflinetime
+        global lastonlinetime
+        global laststoptime
+        global lastlat
+        global lastlon
+        global runorstop
         HEADERS = {
             'Host': 'ts.amap.com',
             'Accept': 'application/json',
@@ -114,7 +128,7 @@ class GaodeDeviceScanner(DeviceScanner):
             'Cookie': 'sessionid=' + self._sessionid,
             }
         Data = self._paramdata
-            
+        
         try:
             response = requests.post(self._url, headers = HEADERS, data = Data )
         except ReadTimeout:
@@ -133,22 +147,56 @@ class GaodeDeviceScanner(DeviceScanner):
             _Log.error("抓包信息有误，请检查是否正确或是否过期，服务器反馈信息："+ret['message']) 
         elif ret['result'] == "true":
             _Log.info("请求服务器信息成功.....") 
+            if ret['data']['carLinkInfoList'][0]['onlineStatus'] == 1:
+                onlineStatus = "在线"
+            else:
+                onlineStatus = "离线"
+                
+            if ret['data']['carLinkInfoList'][0]['naviStatus'] == 1:
+                naviStatus = "导航中"
+            else:
+                naviStatus = "未导航"
+                
+            if onlineStatus == "离线" and self._isonline == "yes":
+                lastofflinetime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                self._isonline = "no"           
+            if onlineStatus == "在线" and self._isonline == "no":
+                lastonlinetime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                self._isonline = "yes"
+                
+            if ret['data']['carLinkInfoList'][0]['naviLocInfo']['lat'] == lastlat and ret['data']['carLinkInfoList'][0]['naviLocInfo']['lon'] == lastlon and runorstop == "运动":
+                laststoptime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                runorstop = "静止"
+            elif ret['data']['carLinkInfoList'][0]['naviLocInfo']['lat'] != lastlat or ret['data']['carLinkInfoList'][0]['naviLocInfo']['lon'] != lastlon:
+                lastlat = ret['data']['carLinkInfoList'][0]['naviLocInfo']['lat']
+                lastlon = ret['data']['carLinkInfoList'][0]['naviLocInfo']['lon']
+                runorstop = "运动"
+            
             kwargs = {
                 "dev_id": slugify("gaodemap_{}".format(self._name)),
-                "host_name": self._name,
+                "host_name": self._name,                
                 "attributes": {
-                    "icon": "mdi:car",
+                    "icon": ICON,
                     "querytime": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     "macaddr": ret['data']['carLinkInfoList'][0]['data']['macaddr'],
+                    "status": runorstop,
                     "loginStatus": ret['data']['carLinkInfoList'][0]['loginStatus'],
-                    "naviStatus": ret['data']['carLinkInfoList'][0]['naviStatus'],
-                    "onlineStatus": ret['data']['carLinkInfoList'][0]['onlineStatus'],
+                    "naviStatus": naviStatus,
+                    "onlineStatus": onlineStatus,                    
+                    "lastofflinetime": lastofflinetime,
+                    "lastonlinetime": lastonlinetime,
+                    "laststoptime": laststoptime,
                     },
                 }
             kwargs["gps"] = [
                 ret['data']['carLinkInfoList'][0]['naviLocInfo']['lat'] + 0.00240,
                 ret['data']['carLinkInfoList'][0]['naviLocInfo']['lon'] - 0.00540,
             ]
+
+            if ret['data']['carLinkInfoList'][0]['onlineStatus'] == 1:
+                interval = 10
+            else:
+                interval = 60
             result = await self.async_see(**kwargs)
             return result
             
