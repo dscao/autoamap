@@ -2,6 +2,7 @@
   "domain": "gaodemap",
   "name": "gaodemap",
   "documentation": "https://github.com/dscao/gaodemap",
+  "version": "1.1.0",
   "dependencies": [
     "zone"
   ],

@@ -26,6 +26,8 @@ from bs4 import BeautifulSoup
 from requests import ReadTimeout, ConnectTimeout, HTTPError, Timeout, ConnectionError
 from datetime import timedelta
 from time import strftime
+from aiohttp.client_exceptions import ClientConnectorError
+from async_timeout import timeout
 import homeassistant.util.dt as dt_util
 from homeassistant.components import zone
 from homeassistant.components.device_tracker import PLATFORM_SCHEMA
@@ -103,8 +105,26 @@ class GaodeDeviceScanner(DeviceScanner):
         self._isonline = "no"
         self.attributes = {}
     
-        
+    def post_data(self, url, headerstr, datastr):
+        json_text = requests.post(url, headers=headerstr, data = datastr).content
+        json_text = json_text.decode('utf-8')
+        resdata = json.loads(json_text)
+        return resdata    
     
+    def time_diff (timestamp):
+                result = datetime.datetime.now() - datetime.datetime.fromtimestamp(timestamp)
+                hours = int(result.seconds / 3600)
+                minutes = int(result.seconds % 3600 / 60)
+                seconds = result.seconds%3600%60
+                if result.days > 0:
+                    return("{0}天{1}小时{2}分钟".format(result.days,hours,minutes))
+                elif hours > 0:
+                    return("{0}小时{1}分钟".format(hours,minutes))
+                elif minutes > 0:
+                    return("{0}分钟{1}秒".format(minutes,seconds))
+                else:
+                    return("{0}秒".format(seconds))
+                    
     async def async_start(self, hass, interval):
         """Perform a first update and start polling at the given interval."""
         await self.async_update_info()
@@ -129,20 +149,31 @@ class GaodeDeviceScanner(DeviceScanner):
             }
         Data = self._paramdata
         
-        try:
-            response = requests.post(self._url, headers = HEADERS, data = Data )
-        except ReadTimeout:
-            _Log.error("Connection timeout....")
-        except ConnectionError:
-            _Log.error("Connection Error....")
-        except RequestException:
-            _Log.error("Unknown Error")
-        '''_Log.info( response ) '''
-        res = response.content.decode('utf-8')
-        _Log.debug("res:" + res)
-
-        ret = json.loads(res, strict=False)        
+        def time_diff (timestamp):
+            result = datetime.datetime.now() - datetime.datetime.fromtimestamp(timestamp)
+            hours = int(result.seconds / 3600)
+            minutes = int(result.seconds % 3600 / 60)
+            seconds = result.seconds%3600%60
+            if result.days > 0:
+                return("{0}天{1}小时{2}分钟".format(result.days,hours,minutes))
+            elif hours > 0:
+                return("{0}小时{1}分钟".format(hours,minutes))
+            elif minutes > 0:
+                return("{0}分钟{1}秒".format(minutes,seconds))
+            else:
+                return("{0}秒".format(seconds))
+                
         
+        try:
+            async with timeout(10):                
+                ret =  await self.hass.async_add_executor_job(self.post_data, self._url, HEADERS, Data)
+                _Log.debug("请求结果: %s", ret)
+        except (
+            ClientConnectorError
+        ) as error:
+            raise UpdateFailed(error)
+        _Log.debug("Requests remaining: %s", self._url)
+
         if ret['result'] == "false":
             _Log.error("抓包信息有误，请检查是否正确或是否过期，服务器反馈信息："+ret['message']) 
         elif ret['result'] == "true":
@@ -171,6 +202,13 @@ class GaodeDeviceScanner(DeviceScanner):
                 lastlat = ret['data']['carLinkInfoList'][0]['naviLocInfo']['lat']
                 lastlon = ret['data']['carLinkInfoList'][0]['naviLocInfo']['lon']
                 runorstop = "运动"
+                
+            if laststoptime != "未知" and runorstop == "静止" :
+                parkingtime = time_diff (int(time.mktime(time.strptime(laststoptime, "%Y-%m-%d %H:%M:%S"))))
+            else:
+                parkingtime = "未知"
+                
+            _Log.debug("laststoptime: %s", laststoptime)
             
             kwargs = {
                 "dev_id": slugify("gaodemap_{}".format(self._name)),
@@ -186,6 +224,7 @@ class GaodeDeviceScanner(DeviceScanner):
                     "lastofflinetime": lastofflinetime,
                     "lastonlinetime": lastonlinetime,
                     "laststoptime": laststoptime,
+                    "Parking_time": parkingtime,
                     },
                 }
             kwargs["gps"] = [
