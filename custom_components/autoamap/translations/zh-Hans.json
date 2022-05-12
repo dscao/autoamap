@@ -1,0 +1,37 @@
+{
+    "config": {
+        "title": "高德地图车机版",
+        "step": {
+            "user": {
+                "title": "高德地图车机版",
+                "description": "如果您需要配置方面的帮助，请查看此处: https://github.com/dscao/gooddriver",
+                "data": {
+                    "name": "名称",
+					"api_key": "高德地图手机版抓包得到的Key",
+                    "user_id": "高德地图手机版抓包得到的sessionid",                   
+					"paramdata": "高德地图手机版抓包得到的paramdata",
+					"xuhao": "序号，一般为0，如果有多个车机版1、2、3……测试当前是哪一个，使用多个实体时显示属性信息将不准确。"
+                }
+            }
+        },
+        "error": {
+            "communication": "Key、sessionid、paramdata可能无效，也可能序号超出了。请检查输入值。"
+        },
+        "abort": {
+            "single_instance_allowed": "仅允许单个配置.",
+            "already_configured": "请勿重复配置."
+        }
+    },
+	"options": {
+        "step": {
+            "user":{
+                "data": {                    
+                    "attr_show": "属性中显示停车时间等更多信息",
+					"update_interval_seconds": "更新间隔时间(10-3600秒),建议设为90"
+                },
+                "description": "设置实体属性是否显示"
+            }
+        }
+    }
+
+}

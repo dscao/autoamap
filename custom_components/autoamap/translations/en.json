@@ -1,0 +1,36 @@
+{
+    "config": {
+        "title": "Gooddriver Device_tracker",
+        "step": {
+            "user": {
+                "title": "Gooddriver Device_tracker",
+                "description": "If you need help with the configuration have a look here: https://github.com/dscao/Gooddriver",
+                "data": {
+                    "name": "name",
+					"api_key": "Key",
+                    "user_id": "sessionid",                   
+					"paramdata": "paramdata",
+					"xuhao": "The serial number of the array in the capture data result of AutoNavi map mobile version is generally 0. If there are multiple car version, test 1, 2, 3, which one is the current"
+                }
+            }
+        },
+        "error": {
+            "communication": "Key or ID may be invalid, please check the input value."
+        },
+        "abort": {
+            "single_instance_allowed": "Only a single configuration of Gooddriver Device_tracker is allowed.",
+            "already_configured": "This is already configured."
+        }
+    },
+    "options": {
+        "step": {
+            "user":{
+                "data": {                    
+                    "attr_show": "Attributes showing parking time and more",
+					"update_interval_seconds": "Update_interval(1-3600 seconds)"
+                },
+                "description": "Set Entity Attributes"
+            }
+        }
+    }
+}

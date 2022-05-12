@@ -1,0 +1,12 @@
+{
+  "domain": "autoamap",
+  "name": "autoamap",
+  "documentation": "https://github.com/dscao/autoamap",
+  "issue_tracker": "https://github.com/dscao/autoamap/issues",
+  "dependencies": [],
+  "version": "2022.5.12",
+  "iot_class": "cloud_polling", 
+  "config_flow": true,
+  "codeowners": ["@dscao"],
+  "requirements": []
+}
