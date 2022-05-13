@@ -72,7 +72,7 @@ class autoamapEntity(TrackerEntity):
     def __init__(self, name, attr_show, xuhao, coordinator):
         
         self.coordinator = coordinator
-        _LOGGER.debug("coordinator macaddr: %s", coordinator.data["data"]["carLinkInfoList"][0]["data"]["macaddr"] )
+        _LOGGER.debug("coordinator macaddr: %s", coordinator.data["data"]["carLinkInfoList"][xuhao]["data"]["macaddr"] )
         self._name = name
         self._attrs = {}
         self._attr_show = attr_show
