@@ -5,7 +5,7 @@ Github        : https://github.com/dscao
 Description   : 
 Date          : 2022-05-13
 LastEditors   : dscao
-LastEditTime  : 2022-05-13
+LastEditTime  : 2022-05-14
 '''
 """
 name: 'autoamap'
@@ -23,6 +23,7 @@ import asyncio
 import json
 import time, datetime
 import requests
+
 
 
 from aiohttp.client_exceptions import ClientConnectorError
@@ -77,7 +78,7 @@ from .const import (
 )
 
 TYPE_GEOFENCE = "Geofence"
-__version__ = '2022.5.12'
+__version__ = '2022.5.14'
 
 _LOGGER = logging.getLogger(__name__)   
     
@@ -85,7 +86,19 @@ PLATFORMS = ["device_tracker"]
 
 USER_AGENT = 'iphone OS 15.4.1'
 API_URL = "http://ts.amap.com/ws/tservice/internal/link/mobile/get?ent=2&in="
-          
+        
+
+laststoptime = "未知"
+lastlat = "未知"
+lastlon = "未知"
+runorstop = "未知"
+thislat = "未知"
+thislon = "未知"
+lastofflinetime = "未知"
+lastonlinetime = "未知"
+isonline = "未知"
+
+        
 async def async_setup(hass: HomeAssistant, config: Config) -> bool:
     """Set up configured autoamap."""
     # if (MAJOR_VERSION, MINOR_VERSION) < (2022, 4):
@@ -109,7 +122,7 @@ async def async_setup_entry(hass, config_entry) -> bool:
     websession = async_get_clientsession(hass)
 
     coordinator = autoamapDataUpdateCoordinator(
-        hass, websession, api_key, user_id, paramadata,location_key, update_interval_seconds
+        hass, websession, api_key, user_id, paramadata, xuhao, location_key, update_interval_seconds
     )
     await coordinator.async_refresh()
 
@@ -157,13 +170,13 @@ async def update_listener(hass, config_entry):
 class autoamapDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching autoamap data API."""
 
-    def __init__(self, hass, session, api_key, user_id, paramdata, location_key, update_interval_seconds):
+    def __init__(self, hass, session, api_key, user_id, paramdata, xuhao, location_key, update_interval_seconds):
         """Initialize."""
         self.location_key = location_key
         self.user_id = user_id
         self.api_key = api_key
         self.api_paramdata = paramdata
-
+        self.api_xuhao = xuhao
         
         update_interval = (
             datetime.timedelta(seconds=int(update_interval_seconds))
@@ -205,5 +218,72 @@ class autoamapDataUpdateCoordinator(DataUpdateCoordinator):
         ) as error:
             raise UpdateFailed(error)
         _LOGGER.debug("Requests remaining: %s", url)
-        return {**resdata,"location_key":self.location_key}
+        
+        global laststoptime
+        global lastlat
+        global lastlon
+        global thislat
+        global thislon
+        global runorstop
+        global lastofflinetime
+        global lastonlinetime
+        global isonline
+
+        data = resdata["data"]["carLinkInfoList"][self.api_xuhao]
+        _LOGGER.debug("result data: %s", data)
+        
+        if data:            
+            querytime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")           
+            thislat = data["naviLocInfo"]["lat"]
+            thislon = data["naviLocInfo"]["lon"]
+            macaddr = data["data"]["macaddr"]
+            
+            if data["onlineStatus"] == 1:
+                status = "在线"
+            elif data["onlineStatus"] == 0:
+                status = "离线"
+            else:
+                status = "未知"
+                
+            if data['naviStatus'] == 1:
+                naviStatus = "导航中"
+            else:
+                naviStatus = "未导航"
+                
+            if status == "离线" and isonline == "yes":
+                lastofflinetime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                isonline = "no"
+            if status == "在线" and isonline == "no":
+                lastonlinetime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                isonline = "yes"
+                
+                
+            if thislat == lastlat and thislon == lastlon and runorstop == "运动":
+                laststoptime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                runorstop = "静止"
+            elif thislat != lastlat or thislon != lastlon:
+                lastlat = data["naviLocInfo"]["lat"]
+                lastlon = data["naviLocInfo"]["lon"]
+                runorstop = "运动"  
+                
+            def time_diff (timestamp):
+                result = datetime.datetime.now() - datetime.datetime.fromtimestamp(timestamp)
+                hours = int(result.seconds / 3600)
+                minutes = int(result.seconds % 3600 / 60)
+                seconds = result.seconds%3600%60
+                if result.days > 0:
+                    return("{0}天{1}小时{2}分钟".format(result.days,hours,minutes))
+                elif hours > 0:
+                    return("{0}小时{1}分钟".format(hours,minutes))
+                elif minutes > 0:
+                    return("{0}分钟{1}秒".format(minutes,seconds))
+                else:
+                    return("{0}秒".format(seconds)) 
+            if laststoptime != "未知" and runorstop == "静止" :
+                parkingtime=time_diff(int(time.mktime(time.strptime(laststoptime, "%Y-%m-%d %H:%M:%S")))) 
+            else:
+                parkingtime = "未知"
+                
+                
+        return {"location_key":self.location_key,"thislat":thislat,"thislon":thislon,"querytime":querytime,"status":status,"macaddr":macaddr,"naviStatus":naviStatus,"lastofflinetime":lastofflinetime,"lastonlinetime":lastonlinetime,"laststoptime":laststoptime,"runorstop":runorstop,"parkingtime":parkingtime}
 
