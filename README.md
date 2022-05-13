@@ -11,3 +11,5 @@ support Integration UI, Devices
 key： /ws/tservice/internal/link/mobile/get?ent=2&in= 网址后面很长很长的字符串，全部复制地来。\
 sessionid:  cpuywkud2f0jvhpXXXXXXXXXX  请求头部的sessionid内容\
 paramdata： oMYpXXXXXXXXXX  请求主体表单内容\
+
+此版本请使用homeassistant 2022.2以后的版本
