@@ -185,7 +185,7 @@ class autoamapEntity(TrackerEntity):
             if laststoptime != "未知" and runorstop == "静止" :
                 self._parking_time=time_diff(int(time.mktime(time.strptime(laststoptime, "%Y-%m-%d %H:%M:%S")))) 
             else:
-                parkingtime = "未知"
+                self._parking_time = "未知"
                 
         return (float(thislat) + 0.00240)
 
@@ -201,17 +201,17 @@ class autoamapEntity(TrackerEntity):
     def state_attributes(self): 
         attrs = super(autoamapEntity, self).state_attributes
         data = self.coordinator.data.get("result")
-        if data:           
+        if data:             
+            attrs[ATTR_STATUS] = self._status
+            attrs["navistatus"] = self._naviStatus
+            attrs["macaddr"] = self._macaddr            
+            attrs[ATTR_QUERYTIME] = self._querytime
             if self._attr_show == True:
-                attrs[ATTR_STATUS] = self._status
                 attrs[ATTR_RUNORSTOP] = runorstop        
                 attrs[ATTR_LASTSTOPTIME] = laststoptime
-                attrs[ATTR_QUERYTIME] = self._querytime
                 attrs["lastofflinetime"] = lastofflinetime
-                attrs["lastonlinetime"] = lastonlinetime
-                attrs["navistatus"] = self._naviStatus
-                attrs["macaddr"] = self._macaddr
-                attrs[ATTR_PARKING_TIME] = self._parking_time            
+                attrs["lastonlinetime"] = lastonlinetime  
+                attrs[ATTR_PARKING_TIME] = self._parking_time    
         return attrs    
 
 
