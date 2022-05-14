@@ -96,7 +96,7 @@ thislat = "未知"
 thislon = "未知"
 lastofflinetime = "未知"
 lastonlinetime = "未知"
-isonline = "未知"
+isonline = "no"
 
         
 async def async_setup(hass: HomeAssistant, config: Config) -> bool:
