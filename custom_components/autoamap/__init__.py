@@ -33,7 +33,6 @@ from dateutil.relativedelta import relativedelta
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
 from homeassistant.components.sensor import PLATFORM_SCHEMA
-#from bs4 import BeautifulSoup
 
 from requests import ReadTimeout, ConnectTimeout, HTTPError, Timeout, ConnectionError
 from datetime import timedelta
@@ -78,7 +77,7 @@ from .const import (
 )
 
 TYPE_GEOFENCE = "Geofence"
-__version__ = '2022.5.14'
+__version__ = '2022.5.15'
 
 _LOGGER = logging.getLogger(__name__)   
     
@@ -88,16 +87,7 @@ USER_AGENT = 'iphone OS 15.4.1'
 API_URL = "http://ts.amap.com/ws/tservice/internal/link/mobile/get?ent=2&in="
         
 
-laststoptime = "未知"
-lastlat = "未知"
-lastlon = "未知"
-runorstop = "未知"
-thislat = "未知"
-thislon = "未知"
-lastofflinetime = "未知"
-lastonlinetime = "未知"
-isonline = "no"
-
+varstinydict = {}
         
 async def async_setup(hass: HomeAssistant, config: Config) -> bool:
     """Set up configured autoamap."""
@@ -116,6 +106,16 @@ async def async_setup_entry(hass, config_entry) -> bool:
     update_interval_seconds = config_entry.options.get(CONF_UPDATE_INTERVAL, 90)
     attr_show = config_entry.options.get(CONF_ATTR_SHOW, True)
     location_key = config_entry.unique_id
+    
+    varstinydict["thislat_"+location_key] = ""
+    varstinydict["thislon_"+location_key] = ""
+    varstinydict["lastlat_"+location_key] = ""
+    varstinydict["lastlon_"+location_key] = ""
+    varstinydict["isonline_"+location_key] = ""
+    varstinydict["lastofflinetime_"+location_key] = ""
+    varstinydict["lastonlinetime_"+location_key] = ""        
+    varstinydict["laststoptime_"+location_key] = ""
+    varstinydict["runorstop_"+location_key] = ""
 
     _LOGGER.debug("Using location_key: %s, user_id: %s, update_interval_seconds: %s", location_key, user_id, update_interval_seconds)
 
@@ -201,6 +201,7 @@ class autoamapDataUpdateCoordinator(DataUpdateCoordinator):
 
     async def _async_update_data(self):
         """Update data via library."""
+        _LOGGER.debug("varstinydict: %s", varstinydict)
         try:
             async with timeout(10): 
                 headers = {
@@ -219,26 +220,21 @@ class autoamapDataUpdateCoordinator(DataUpdateCoordinator):
             raise UpdateFailed(error)
         _LOGGER.debug("Requests remaining: %s", url)
         
-        global laststoptime
-        global lastlat
-        global lastlon
-        global thislat
-        global thislon
-        global runorstop
-        global lastofflinetime
-        global lastonlinetime
-        global isonline
-
         data = resdata["data"]["carLinkInfoList"][self.api_xuhao]
         _LOGGER.debug("result data: %s", data)
         
-        if data:
-            querytime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")           
-            thislat = data["naviLocInfo"]["lat"]
-            thislon = data["naviLocInfo"]["lon"]
+        if data.get("data"):
             macaddr = data["data"]["macaddr"]
+        else:
+            macaddr = "未知"
+            
+        if data:
+            querytime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             device_model = "高德地图车机版"
             sw_version = data["sysInfo"]["autodiv"]
+            
+            thislat = varstinydict["thislat_"+self.location_key] = data["naviLocInfo"]["lat"]
+            thislon = varstinydict["thislon_"+self.location_key] = data["naviLocInfo"]["lon"]
             
             if data["onlineStatus"] == 1:
                 status = "在线"
@@ -252,22 +248,26 @@ class autoamapDataUpdateCoordinator(DataUpdateCoordinator):
             else:
                 naviStatus = "未导航"
                 
-            if status == "离线" and isonline == "yes":
-                lastofflinetime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                isonline = "no"
-            if status == "在线" and isonline == "no":
-                lastonlinetime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                isonline = "yes"
-                
-                
-            if thislat == lastlat and thislon == lastlon and runorstop == "运动":
-                laststoptime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                runorstop = "静止"
-            elif thislat != lastlat or thislon != lastlon:
-                lastlat = data["naviLocInfo"]["lat"]
-                lastlon = data["naviLocInfo"]["lon"]
-                runorstop = "运动"  
-                
+            if status == "离线" and (varstinydict["isonline_"+self.location_key] == "yes" or varstinydict["isonline_"+self.location_key] == ""):
+                varstinydict["lastofflinetime_"+self.location_key] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                varstinydict["isonline_"+self.location_key] = "no"
+            if status == "在线" and (varstinydict["isonline_"+self.location_key] == "no" or varstinydict["isonline_"+self.location_key] == ""):
+                varstinydict["lastonlinetime_"+self.location_key] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                varstinydict["isonline_"+self.location_key] = "yes"
+            
+            if varstinydict["thislat_"+self.location_key] == varstinydict["lastlat_"+self.location_key] and varstinydict["thislon_"+self.location_key] == varstinydict["lastlon_"+self.location_key] and varstinydict["runorstop_"+self.location_key] == "运动":
+                varstinydict["laststoptime_"+self.location_key] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                varstinydict["runorstop_"+self.location_key] = "静止"
+            elif varstinydict["thislat_"+self.location_key] != varstinydict["lastlat_"+self.location_key] or varstinydict["thislon_"+self.location_key] != varstinydict["lastlon_"+self.location_key]:
+                varstinydict["lastlat_"+self.location_key] = data["naviLocInfo"]["lat"]
+                varstinydict["lastlon_"+self.location_key] = data["naviLocInfo"]["lon"]
+                varstinydict["runorstop_"+self.location_key] = "运动"  
+            
+            lastofflinetime = varstinydict["lastofflinetime_"+self.location_key]
+            lastonlinetime = varstinydict["lastonlinetime_"+self.location_key]
+            laststoptime = varstinydict["laststoptime_"+self.location_key] 
+            runorstop =  varstinydict["runorstop_"+self.location_key]
+            
             def time_diff (timestamp):
                 result = datetime.datetime.now() - datetime.datetime.fromtimestamp(timestamp)
                 hours = int(result.seconds / 3600)
@@ -281,7 +281,7 @@ class autoamapDataUpdateCoordinator(DataUpdateCoordinator):
                     return("{0}分钟{1}秒".format(minutes,seconds))
                 else:
                     return("{0}秒".format(seconds)) 
-            if laststoptime != "未知" and runorstop == "静止" :
+            if laststoptime != "" and runorstop == "静止" :
                 parkingtime=time_diff(int(time.mktime(time.strptime(laststoptime, "%Y-%m-%d %H:%M:%S")))) 
             else:
                 parkingtime = "未知"
