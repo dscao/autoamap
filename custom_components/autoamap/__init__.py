@@ -232,11 +232,13 @@ class autoamapDataUpdateCoordinator(DataUpdateCoordinator):
         data = resdata["data"]["carLinkInfoList"][self.api_xuhao]
         _LOGGER.debug("result data: %s", data)
         
-        if data:            
+        if data:
             querytime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")           
             thislat = data["naviLocInfo"]["lat"]
             thislon = data["naviLocInfo"]["lon"]
             macaddr = data["data"]["macaddr"]
+            device_model = "高德地图车机版"
+            sw_version = data["sysInfo"]["autodiv"]
             
             if data["onlineStatus"] == 1:
                 status = "在线"
@@ -285,5 +287,5 @@ class autoamapDataUpdateCoordinator(DataUpdateCoordinator):
                 parkingtime = "未知"
                 
                 
-        return {"location_key":self.location_key,"thislat":thislat,"thislon":thislon,"querytime":querytime,"status":status,"macaddr":macaddr,"naviStatus":naviStatus,"lastofflinetime":lastofflinetime,"lastonlinetime":lastonlinetime,"laststoptime":laststoptime,"runorstop":runorstop,"parkingtime":parkingtime}
+        return {"location_key":self.location_key,"device_model":device_model,"sw_version":sw_version,"thislat":thislat,"thislon":thislon,"querytime":querytime,"status":status,"macaddr":macaddr,"naviStatus":naviStatus,"lastofflinetime":lastofflinetime,"lastonlinetime":lastonlinetime,"laststoptime":laststoptime,"runorstop":runorstop,"parkingtime":parkingtime}
 
