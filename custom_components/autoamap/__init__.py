@@ -23,8 +23,7 @@ import asyncio
 import json
 import time, datetime
 import requests
-
-
+import re
 
 from aiohttp.client_exceptions import ClientConnectorError
 from async_timeout import timeout
@@ -189,12 +188,18 @@ class autoamapDataUpdateCoordinator(DataUpdateCoordinator):
     def get_data(self, url, headerstr):
         json_text = requests.get(url, headers=headerstr).content
         json_text = json_text.decode('utf-8')
+        json_text = re.sub(r'\\','',json_text)
+        json_text = re.sub(r'"{','{',json_text)
+        json_text = re.sub(r'}"','}',json_text)
         resdata = json.loads(json_text)
         return resdata
         
     def post_data(self, url, headerstr, datastr):
         json_text = requests.post(url, headers=headerstr, data = datastr).content
         json_text = json_text.decode('utf-8')
+        json_text = re.sub(r'\\','',json_text)
+        json_text = re.sub(r'"{','{',json_text)
+        json_text = re.sub(r'}"','}',json_text)
         resdata = json.loads(json_text)
         return resdata
         
