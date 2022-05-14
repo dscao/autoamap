@@ -29,12 +29,12 @@ API_URL = "http://ts.amap.com/ws/tservice/internal/link/mobile/get?ent=2&in="
 _LOGGER = logging.getLogger(__name__)
 
 @config_entries.HANDLERS.register(DOMAIN)
-class autoamaplowHandler(config_entries.ConfigFlow, domain=DOMAIN):
+class FlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     @staticmethod
     @callback
     def async_get_options_flow(config_entry):
         """Get the options flow for this handler."""
-        return autoamapOptionsFlow(config_entry)
+        return OptionsFlow(config_entry)
 
     def __init__(self):
         """Initialize."""
@@ -114,7 +114,7 @@ class autoamaplowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             if host == entry.data.get(CONF_NAME):
                 return True
 
-class autoamapOptionsFlow(config_entries.OptionsFlow):
+class OptionsFlow(config_entries.OptionsFlow):
     """Config flow options for autoamap."""
 
     def __init__(self, config_entry):
