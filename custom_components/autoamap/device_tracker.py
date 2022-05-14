@@ -61,7 +61,7 @@ class autoamapEntity(TrackerEntity):
         _LOGGER.debug("coordinator: %s", coordinator.data)
         self._name = name
         self._attrs = {}
-        self._attr_show = attr_show       
+        self._attr_show = attr_show
 
     @property
     def name(self):            
@@ -82,6 +82,8 @@ class autoamapEntity(TrackerEntity):
             "name": self._name,
             "manufacturer": MANUFACTURER,
             "entry_type": DeviceEntryType.SERVICE,
+            "model": self.coordinator.data["device_model"],
+            "sw_version": self.coordinator.data["sw_version"],
         }
     @property
     def should_poll(self):
