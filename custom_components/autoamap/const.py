@@ -10,7 +10,7 @@ REQUIRED_FILES = [
     "config_flow.py",
     "translations/en.json",
 ]
-VERSION = "2022.5.10"
+VERSION = "2022.5.16"
 ISSUE_URL = "https://github.com/dscao/autoamap/issues"
 
 STARTUP = """
@@ -35,6 +35,8 @@ NAME = "autoamap"
 CONF_USER_ID = "user_id"
 CONF_PARAMDATA = "paramdata"
 CONF_XUHAO = "xuhao"
+CONF_MAP_LAT = "map_lat"
+CONF_MAP_LNG = "map_lng"
 
 CONF_ATTR_SHOW = "attr_show"
 CONF_UPDATE_INTERVAL = "update_interval_seconds"
@@ -51,5 +53,3 @@ ATTR_LASTSTOPTIME = "laststoptime"
 ATTR_UPDATE_TIME = "update_time"
 ATTR_QUERYTIME = "querytime"
 ATTR_PARKING_TIME = "parking_time"
-
-
