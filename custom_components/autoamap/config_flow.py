@@ -16,6 +16,8 @@ from .const import (
     CONF_USER_ID,
     CONF_PARAMDATA,
     CONF_XUHAO,
+    CONF_MAP_LAT,
+    CONF_MAP_LNG,
     CONF_UPDATE_INTERVAL,
     CONF_ATTR_SHOW,
     DOMAIN,
@@ -67,7 +69,7 @@ class FlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             xuhao = user_input["xuhao"]
 
             redata =  await self.hass.async_add_executor_job(self.post_data, url, headers, Data)         
-            _LOGGER.debug("Requests: %s", redata)
+            _LOGGER.info("Requests: %s", redata)
             
             status = redata["result"]=="true" and len(redata["data"]["carLinkInfoList"]) > user_input['xuhao']
             if status == True:
@@ -89,8 +91,8 @@ class FlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         device_name = "autoamap"
         data_schema = OrderedDict()
         data_schema[vol.Required(CONF_NAME, default=device_name)] = str
-        data_schema[vol.Required(CONF_API_KEY ,default ="9o1XKgwNYv4xxxxxxxx&csid=836xxxx-EB91-4xxx-84xx-A5xxxxxxxxxx")] = str
-        data_schema[vol.Required(CONF_USER_ID ,default ="xr42asymxxxxxxxxxxxxxxxxxxxxxxxx")] = str
+        data_schema[vol.Required(CONF_API_KEY ,default ="9o1XKgwxxxxwkQ%2xxxxxxxx%3D&csid=836EXXXX-XXXX-XXXX-XXXX-XXXXXX")] = str
+        data_schema[vol.Required(CONF_USER_ID ,default ="xr42asymuuwtqiq5spddbei4cmgnprd7")] = str
         data_schema[vol.Required(CONF_PARAMDATA ,default ="oMYpxxxxxxxxxxxx")] = str
         data_schema[vol.Required(CONF_XUHAO ,default =0 )] = int
 
@@ -138,6 +140,12 @@ class OptionsFlow(config_entries.OptionsFlow):
                         CONF_UPDATE_INTERVAL,
                         default=self.config_entry.options.get(CONF_UPDATE_INTERVAL, 90),
                     ): vol.All(vol.Coerce(int), vol.Range(min=10, max=3600)),vol.Optional(
+                        CONF_MAP_LAT,
+                        default=self.config_entry.options.get(CONF_MAP_LAT, 0.00240),
+                    ): vol.All(vol.Coerce(float), vol.Range(min=-1, max=1)),vol.Optional(
+                        CONF_MAP_LNG,
+                        default=self.config_entry.options.get(CONF_MAP_LNG, -0.00540),
+                    ): vol.All(vol.Coerce(float), vol.Range(min=-1, max=1)),vol.Optional(
                         CONF_ATTR_SHOW,
                         default=self.config_entry.options.get(CONF_ATTR_SHOW, True),
                     ): bool
