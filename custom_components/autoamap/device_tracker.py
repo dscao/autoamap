@@ -23,6 +23,8 @@ from .const import (
     CONF_USER_ID,
     CONF_PARAMDATA,
     CONF_XUHAO,
+    CONF_MAP_LAT,
+    CONF_MAP_LNG,
     COORDINATOR,
     DOMAIN,
     UNDO_UPDATE_LISTENER,
@@ -44,22 +46,26 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Add autoamap entities from a config_entry."""
-    name = config_entry.data[CONF_NAME] 
+    name = config_entry.data[CONF_NAME]
+    map_lat = config_entry.options.get(CONF_MAP_LAT, 0.00240)
+    map_lng = config_entry.options.get(CONF_MAP_LNG, -0.00540)
     attr_show = config_entry.options.get(CONF_ATTR_SHOW, True)
     coordinator = hass.data[DOMAIN][config_entry.entry_id][COORDINATOR]
     _LOGGER.debug("user_id: %s ,coordinator result: %s", name, coordinator.data)
 
-    async_add_entities([autoamapEntity(name, attr_show, coordinator)], False)
+    async_add_entities([autoamapEntity(name, map_lat, map_lng, attr_show, coordinator)], False)
 
 
 class autoamapEntity(TrackerEntity):
     """Representation of a tracker condition."""
     
-    def __init__(self, name, attr_show, coordinator):
+    def __init__(self, name, map_lat, map_lng, attr_show, coordinator):
         
         self.coordinator = coordinator
         _LOGGER.debug("coordinator: %s", coordinator.data)
         self._name = name
+        self._map_lat = map_lat
+        self._map_lng = map_lng
         self._attrs = {}
         self._attr_show = attr_show
 
@@ -106,11 +112,11 @@ class autoamapEntity(TrackerEntity):
 
     @property
     def latitude(self):                
-        return (float(self.coordinator.data["thislat"]) + 0.00240)
+        return (float(self.coordinator.data["thislat"]) + self._map_lat)
 
     @property
     def longitude(self):
-        return (float(self.coordinator.data["thislon"]) - 0.00540)
+        return (float(self.coordinator.data["thislon"]) + self._map_lng)
         
     @property
     def location_accuracy(self):
