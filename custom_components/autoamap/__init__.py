@@ -5,7 +5,7 @@ Github        : https://github.com/dscao
 Description   : 
 Date          : 2022-05-13
 LastEditors   : dscao
-LastEditTime  : 2022-05-14
+LastEditTime  : 2022-05-16
 '''
 """
 name: 'autoamap'
@@ -68,6 +68,8 @@ from .const import (
     CONF_USER_ID,
     CONF_PARAMDATA,
     CONF_XUHAO,
+    CONF_MAP_LAT,
+    CONF_MAP_LNG,
     COORDINATOR,
     DOMAIN,
     UNDO_UPDATE_LISTENER,
@@ -76,7 +78,7 @@ from .const import (
 )
 
 TYPE_GEOFENCE = "Geofence"
-__version__ = '2022.5.15'
+__version__ = '2022.5.16'
 
 _LOGGER = logging.getLogger(__name__)   
     
@@ -188,18 +190,12 @@ class autoamapDataUpdateCoordinator(DataUpdateCoordinator):
     def get_data(self, url, headerstr):
         json_text = requests.get(url, headers=headerstr).content
         json_text = json_text.decode('utf-8')
-        json_text = re.sub(r'\\','',json_text)
-        json_text = re.sub(r'"{','{',json_text)
-        json_text = re.sub(r'}"','}',json_text)
         resdata = json.loads(json_text)
         return resdata
         
     def post_data(self, url, headerstr, datastr):
         json_text = requests.post(url, headers=headerstr, data = datastr).content
         json_text = json_text.decode('utf-8')
-        json_text = re.sub(r'\\','',json_text)
-        json_text = re.sub(r'"{','{',json_text)
-        json_text = re.sub(r'}"','}',json_text)
         resdata = json.loads(json_text)
         return resdata
         
