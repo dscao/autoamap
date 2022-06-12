@@ -108,7 +108,7 @@ class autoamapEntity(TrackerEntity):
         
     @property
     def source_type(self):
-        return "GPS"
+        return "gps"
 
     @property
     def latitude(self):                
