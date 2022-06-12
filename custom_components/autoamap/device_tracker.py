@@ -120,7 +120,7 @@ class autoamapEntity(TrackerEntity):
         
     @property
     def location_accuracy(self):
-        return 10        
+        return 0        
 
     @property
     def state_attributes(self): 
