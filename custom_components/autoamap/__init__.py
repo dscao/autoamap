@@ -68,8 +68,6 @@ from .const import (
     CONF_USER_ID,
     CONF_PARAMDATA,
     CONF_XUHAO,
-    CONF_MAP_LAT,
-    CONF_MAP_LNG,
     COORDINATOR,
     DOMAIN,
     UNDO_UPDATE_LISTENER,

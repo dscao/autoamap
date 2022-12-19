@@ -27,8 +27,7 @@
             "user":{
                 "data": {                    
                     "attr_show": "属性中显示停车时间等更多信息",
-					"map_lat": "map_lat:地图偏移latitude增加的数值：一般小于0.01大于-0.01",
-					"map_lng": "map_lng:地图偏移longitude增加的数值：一般小于0.01大于-0.01",
+					"gps_conver": "将GCJ02(火星坐标系)转GPS84",
 					"update_interval_seconds": "更新间隔时间(10-3600秒),建议设为90"
                 },
                 "description": "设置实体属性是否显示，不显示更简洁，显示内容更丰富。"

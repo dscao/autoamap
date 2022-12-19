@@ -35,9 +35,7 @@ NAME = "autoamap"
 CONF_USER_ID = "user_id"
 CONF_PARAMDATA = "paramdata"
 CONF_XUHAO = "xuhao"
-CONF_MAP_LAT = "map_lat"
-CONF_MAP_LNG = "map_lng"
-
+CONF_GPS_CONVER = "gps_conver"
 CONF_ATTR_SHOW = "attr_show"
 CONF_UPDATE_INTERVAL = "update_interval_seconds"
 

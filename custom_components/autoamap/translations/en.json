@@ -27,9 +27,8 @@
             "user":{
                 "data": {                    
                     "attr_show": "Attributes showing parking time and more",
-					"map_lat": "map_lat: The increased value of map offset latitude: ",
-					"map_lng": "map_lng: The increased value of map offset longitude: ",
-					"update_interval_seconds": "Update_interval(1-3600 seconds)"
+					"gps_conver": "conver gps from GJC02 to GPS84",
+					"update_interval_seconds": "Update_interval(10-3600 seconds)"
                 },
                 "description": "Set Entity Attributes"
             }
