@@ -97,7 +97,7 @@ class autoamapEntity(TrackerEntity):
     @property
     def should_poll(self):
         """Return the polling requirement of the entity."""
-        return False
+        return True
 
     # @property
     # def available(self):
