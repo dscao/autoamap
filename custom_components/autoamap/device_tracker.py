@@ -152,7 +152,6 @@ class autoamapEntity(TrackerEntity):
 
     async def async_update(self):
         """Update autoamap entity."""
-        _LOGGER.debug("device tracker_update: %s", self.coordinator.data["MESSAGE"]["HD_STATE_TIME"])
         _LOGGER.debug(datetime.datetime.now(datetime.timezone.utc).astimezone().tzinfo)
         await self.coordinator.async_request_refresh()
         if self._gps_conver == True:
