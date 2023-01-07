@@ -22,7 +22,7 @@
             "already_configured": "请勿重复配置."
         }
     },
-	"options": {
+    "options": {
         "step": {
             "user":{
                 "data": {                    
