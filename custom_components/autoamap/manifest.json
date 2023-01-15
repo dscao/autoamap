@@ -4,7 +4,7 @@
   "documentation": "https://github.com/dscao/autoamap",
   "issue_tracker": "https://github.com/dscao/autoamap/issues",
   "dependencies": [],
-  "version": "2022.12.19",
+  "version": "1.2",
   "iot_class": "cloud_polling", 
   "config_flow": true,
   "codeowners": ["@dscao"],
