@@ -22,7 +22,7 @@
             "already_configured": "请勿重复配置."
         }
     },
-    "options": {
+	"options": {
         "step": {
             "user":{
                 "data": {                    
@@ -33,6 +33,71 @@
                 "description": "设置实体属性是否显示，不显示更简洁，显示内容更丰富。"
             }
         }
-    }
-
+    },
+	"entity": {
+		"device_tracker": {
+			"autoamap_device_tracker": {
+				"name": "高德地图车机版",
+				"state_attributes": {
+					"speed": {
+					  "name": "当前车速"
+					},
+					"course": {
+					  "name": "行车方向"
+					},
+					"status": {
+					  "name": "当前状态"
+					},
+					"navistatus": {
+					  "name": "导航状态"
+					},
+					"macaddr": {
+					  "name": "网卡地址"
+					},
+					"lastofflinetime": {
+					  "name": "上次离线时间"
+					},					
+					"lastonlinetime": {
+					  "name": "上次上线时间"
+					},
+					"update_time": {
+					  "name": "更新时间"
+					},
+					"query_time": {
+					  "name": "查询时间"
+					},
+					"runorstop": {
+					  "name": "运动状态"
+					},
+					"laststoptime": {
+					  "name": "上次停止时间"
+					},
+					"parking_time": {
+					  "name": "停车时长"
+					},
+					"battery": {
+					  "name": "电池电量"
+					},
+					"gps_accuracy": {
+					  "name": "GPS精度"
+					},
+					"latitude": {
+					  "name": "纬度"
+					},
+					"longitude": {
+					  "name": "经度"
+					},
+					"source_type": {
+					  "name": "数据源",
+					  "state": {
+						"bluetooth_le": "低功耗蓝牙",
+						"bluetooth": "蓝牙",
+						"gps": "GPS定位",
+						"router": "路由器"
+					  }
+					}
+			    }
+			}
+		}
+	}
 }

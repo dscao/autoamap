@@ -58,7 +58,8 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 class autoamapEntity(TrackerEntity):
     """Representation of a tracker condition."""
     _attr_has_entity_name = True
-    _attr_name = None
+    #_attr_name = None
+    _attr_translation_key = "autoamap_device_tracker"
     def __init__(self, name, gps_conver, attr_show, coordinator):
         
         self.coordinator = coordinator
@@ -73,9 +74,9 @@ class autoamapEntity(TrackerEntity):
         else:
             self._coords = [self.coordinator.data["thislon"], self.coordinator.data["thislat"]]
 
-    @property
-    def name(self):            
-        return self._name
+    # @property
+    # def name(self):            
+        # return self._name
         
      
     @property
