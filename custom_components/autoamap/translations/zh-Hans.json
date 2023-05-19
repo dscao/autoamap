@@ -31,10 +31,18 @@
 					"update_interval_seconds": "更新间隔时间(10-3600秒),建议设为90",
 					"sensors": "传感器"
                 },
-                "description": "设置实体属性是否显示，不显示更简洁，显示内容更丰富。"
+                "description": "更多可选设置"
             }
         }
     },
+	"selector": {
+		"sensors": {
+			"options": {
+				"last_update": "最后更新",
+				"parkingtime": "停车时长"
+			}
+		}
+	},
 	"entity": {
 		"device_tracker": {
 			"autoamap_device_tracker": {
@@ -102,6 +110,19 @@
 					}
 			    }
 			}
-		}
+		},
+		"sensor": {
+			"parkingtime": {
+				"name": "停车时长",
+				"state_attributes": {
+					"querytime": {
+					  "name": "查询时间"
+					}
+				}
+			},
+			"last_update": {
+				"name": "最后更新"
+			}
+	    }
 	}
 }

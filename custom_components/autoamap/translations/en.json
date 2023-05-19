@@ -34,5 +34,95 @@
                 "description": "Set Entity Attributes"
             }
         }
-    }
+    },
+	"selector": {
+		"sensors": {
+			"options": {
+				"last_update": "Last_update",
+				"parkingtime": "Parking Time"
+			}
+		}
+	},
+	"entity": {
+		"device_tracker": {
+			"autoamap_device_tracker": {
+				"name": "Autoamap",
+				"state_attributes": {
+					"speed": {
+					  "name": "speed"
+					},
+					"course": {
+					  "name": "course"
+					},
+					"status": {
+					  "name": "status"
+					},
+					"device_status": {
+					  "name": "device status"
+					},
+					"navistatus": {
+					  "name": "navistatus"
+					},
+					"macaddr": {
+					  "name": "mac address"
+					},
+					"lastofflinetime": {
+					  "name": "last offline time"
+					},					
+					"lastonlinetime": {
+					  "name": "last online time"
+					},
+					"last_update": {
+					  "name": "last_update"
+					},
+					"querytime": {
+					  "name": "query time"
+					},
+					"runorstop": {
+					  "name": "run or stop"
+					},
+					"laststoptime": {
+					  "name": "last stop time"
+					},
+					"parkingtime": {
+					  "name": "parking time"
+					},
+					"battery": {
+					  "name": "battery"
+					},
+					"gps_accuracy": {
+					  "name": "gps accuracy"
+					},
+					"latitude": {
+					  "name": "latitude"
+					},
+					"longitude": {
+					  "name": "longitude"
+					},
+					"source_type": {
+					  "name": "source type",
+					  "state": {
+						"bluetooth_le": "bluetooth_le",
+						"bluetooth": "bluetooth",
+						"gps": "GPS",
+						"router": "router"
+					  }
+					}
+			    }
+			}
+		},
+		"sensor": {
+			"parkingtime": {
+				"name": "parking time",
+				"state_attributes": {
+					"querytime": {
+					  "name": "query time"
+					}
+				}
+			},
+			"last_update": {
+				"name": "last_update"
+			}
+	    }
+	}
 }
