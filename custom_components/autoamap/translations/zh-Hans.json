@@ -28,7 +28,8 @@
                 "data": {                    
                     "attr_show": "属性中显示停车时间等更多信息，但会不断刷新实体的“上次更新”时间",
 					"gps_conver": "将GCJ02(火星坐标系)转GPS84",
-					"update_interval_seconds": "更新间隔时间(10-3600秒),建议设为90"
+					"update_interval_seconds": "更新间隔时间(10-3600秒),建议设为90",
+					"sensors": "传感器"
                 },
                 "description": "设置实体属性是否显示，不显示更简洁，显示内容更丰富。"
             }

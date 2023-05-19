@@ -28,7 +28,8 @@
                 "data": {                    
                     "attr_show": "Attributes showing parking time and more",
 					"gps_conver": "conver gps from GJC02 to GPS84",
-					"update_interval_seconds": "Update_interval(10-3600 seconds)"
+					"update_interval_seconds": "Update_interval(10-3600 seconds)",
+					"sensors": "Sensors"
                 },
                 "description": "Set Entity Attributes"
             }
