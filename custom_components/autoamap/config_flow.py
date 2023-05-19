@@ -32,12 +32,6 @@ API_URL = "http://ts.amap.com/ws/tservice/internal/link/mobile/get?ent=2&in="
 
 _LOGGER = logging.getLogger(__name__)
 
-SENSOR_LIST = {
-    KEY_PARKING_TIME: "parkingtime"
-}
-
-
-
 @config_entries.HANDLERS.register(DOMAIN)
 class FlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     @staticmethod
@@ -156,19 +150,15 @@ class OptionsFlow(config_entries.OptionsFlow):
                         CONF_ATTR_SHOW,
                         default=self.config_entry.options.get(CONF_ATTR_SHOW, True),
                     ): bool,
-                    # vol.Optional(
-                        # CONF_SENSORS, 
-                        # default=self.config_entry.options.get(CONF_SENSORS)
-                    # ): cv.multi_select(SENSOR_LIST),
                     vol.Optional(
                         CONF_SENSORS, 
                         default=self.config_entry.options.get(CONF_SENSORS)
                     ): SelectSelector(
                             SelectSelectorConfig(
                                 options=[
-                                    {"value": "parkingtime", "label": "parkingtime"}
+                                    {"value": KEY_PARKING_TIME, "label": "parkingtime"}
                                 ], 
-                                mode=SelectSelectorMode.LIST,multiple=True
+                                multiple=True,translation_key=CONF_SENSORS
                             )
                         )
                     
