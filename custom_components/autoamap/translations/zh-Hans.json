@@ -26,7 +26,7 @@
         "step": {
             "user":{
                 "data": {                    
-                    "attr_show": "属性中显示停车时间等更多信息",
+                    "attr_show": "属性中显示停车时间等更多信息，但会不断刷新实体的“上次更新”时间",
 					"gps_conver": "将GCJ02(火星坐标系)转GPS84",
 					"update_interval_seconds": "更新间隔时间(10-3600秒),建议设为90"
                 },
@@ -48,6 +48,9 @@
 					"status": {
 					  "name": "当前状态"
 					},
+					"device_status": {
+					  "name": "设备状态"
+					},
 					"navistatus": {
 					  "name": "导航状态"
 					},
@@ -60,10 +63,10 @@
 					"lastonlinetime": {
 					  "name": "上次上线时间"
 					},
-					"update_time": {
-					  "name": "更新时间"
+					"last_update": {
+					  "name": "最后更新"
 					},
-					"query_time": {
+					"querytime": {
 					  "name": "查询时间"
 					},
 					"runorstop": {
@@ -72,7 +75,7 @@
 					"laststoptime": {
 					  "name": "上次停止时间"
 					},
-					"parking_time": {
+					"parkingtime": {
 					  "name": "停车时长"
 					},
 					"battery": {

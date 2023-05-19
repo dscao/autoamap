@@ -1,4 +1,3 @@
-
 """Adds config flow for autoamap."""
 import logging
 import asyncio
@@ -20,6 +19,10 @@ from .const import (
     CONF_UPDATE_INTERVAL,
     CONF_ATTR_SHOW,
     DOMAIN,
+    CONF_SENSORS,
+    KEY_QUERYTIME,
+    KEY_PARKING_TIME,
+    KEY_ADDRESS,
 )
 
 import voluptuous as vol
@@ -28,6 +31,12 @@ USER_AGENT = 'iphone OS 15.4.1'
 API_URL = "http://ts.amap.com/ws/tservice/internal/link/mobile/get?ent=2&in=" 
 
 _LOGGER = logging.getLogger(__name__)
+
+SENSOR_LIST = {
+    KEY_PARKING_TIME: "Parking_time"
+}
+
+
 
 @config_entries.HANDLERS.register(DOMAIN)
 class FlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
@@ -138,13 +147,19 @@ class OptionsFlow(config_entries.OptionsFlow):
                     vol.Optional(
                         CONF_UPDATE_INTERVAL,
                         default=self.config_entry.options.get(CONF_UPDATE_INTERVAL, 90),
-                    ): vol.All(vol.Coerce(int), vol.Range(min=10, max=3600)), vol.Optional(
+                    ): vol.All(vol.Coerce(int), vol.Range(min=10, max=3600)), 
+                    vol.Optional(
                         CONF_GPS_CONVER,
                         default=self.config_entry.options.get(CONF_GPS_CONVER, True),
-                    ): bool, vol.Optional(
+                    ): bool, 
+                    vol.Optional(
                         CONF_ATTR_SHOW,
                         default=self.config_entry.options.get(CONF_ATTR_SHOW, True),
-                    ): bool
+                    ): bool,
+                    vol.Optional(
+                        CONF_SENSORS, 
+                        default=self.config_entry.options.get(CONF_SENSORS)
+                    ): cv.multi_select(SENSOR_LIST),
                 }
             ),
         )

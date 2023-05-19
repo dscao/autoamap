@@ -5,7 +5,6 @@ import time, datetime
 from homeassistant.components.device_tracker.config_entry import TrackerEntity
 from homeassistant.helpers.device_registry import DeviceEntryType
 
-#from homeassistant.helpers.entity import Entity
 from .helper import gcj02towgs84
 
 from homeassistant.const import (
@@ -33,9 +32,10 @@ from .const import (
     ATTR_SPEED,
     ATTR_COURSE,
     ATTR_STATUS,
+    ATTR_DEVICE_STATUS,
     ATTR_RUNORSTOP,
     ATTR_LASTSTOPTIME,
-    ATTR_UPDATE_TIME,
+    ATTR_LAST_UPDATE,
     ATTR_QUERYTIME,
     ATTR_PARKING_TIME,
 )
@@ -133,16 +133,16 @@ class autoamapEntity(TrackerEntity):
         #data = self.coordinator.data.get("result")
         data = self.coordinator.data
         if data:             
-            attrs[ATTR_STATUS] = data["status"]
+            attrs[ATTR_DEVICE_STATUS] = data["status"]
             attrs["navistatus"] = data["naviStatus"]
-            attrs["macaddr"] = data["macaddr"]        
-            attrs[ATTR_QUERYTIME] = data["querytime"]
+            attrs["macaddr"] = data["macaddr"]            
             if self._attr_show == True:
                 attrs[ATTR_RUNORSTOP] = data["runorstop"]
                 attrs[ATTR_LASTSTOPTIME] = data["laststoptime"]
                 attrs["lastofflinetime"] = data["lastofflinetime"]
                 attrs["lastonlinetime"] = data["lastonlinetime"]
                 attrs[ATTR_PARKING_TIME] = data["parkingtime"]  
+                attrs[ATTR_QUERYTIME] = data["querytime"]
         return attrs    
 
 

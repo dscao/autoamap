@@ -53,6 +53,7 @@ from homeassistant.util import slugify
 from homeassistant.util.location import distance
 
 from homeassistant.const import (
+    Platform,
     CONF_NAME,
     CONF_API_KEY,
     ATTR_GPS_ACCURACY,
@@ -76,11 +77,11 @@ from .const import (
 )
 
 TYPE_GEOFENCE = "Geofence"
-__version__ = '2022.5.16'
+__version__ = '2023.5.19'
 
 _LOGGER = logging.getLogger(__name__)   
     
-PLATFORMS = ["device_tracker"]
+PLATFORMS = [Platform.DEVICE_TRACKER, Platform.SENSOR]
 
 USER_AGENT = 'iphone OS 15.4.1'
 API_URL = "http://ts.amap.com/ws/tservice/internal/link/mobile/get?ent=2&in="
