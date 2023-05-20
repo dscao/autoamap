@@ -29,8 +29,10 @@ from .const import (
     CONF_SENSORS,
     ATTR_ADDRESS,
     ATTR_PARKING_TIME,
+    ATTR_LASTSTOPTIME,
     ATTR_QUERYTIME,
     KEY_ADDRESS,
+    KEY_LASTSTOPTIME,
     KEY_PARKING_TIME,
 )
 
@@ -46,6 +48,11 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         key=KEY_PARKING_TIME,
         name="parkingtime",
         icon="mdi:timer-stop-outline"
+    ),
+    SensorEntityDescription(
+        key=KEY_LASTSTOPTIME,
+        name="laststoptime",
+        icon="mdi:timer-stop"
     )
 )
 
@@ -93,6 +100,8 @@ class gooddriverSensorEntity(CoordinatorEntity):
         self._attr_translation_key = f"{self.entity_description.name}"
         if self.entity_description.key == KEY_PARKING_TIME:
             self._state = self.coordinator.data.get(ATTR_PARKING_TIME)
+        elif self.entity_description.key == KEY_LASTSTOPTIME:
+            self._state = self.coordinator.data.get(ATTR_LASTSTOPTIME)
         elif self.entity_description.key == KEY_ADDRESS:
             if self.coordinator.data.get(ATTR_ADDRESS):                
                 self._state = self.coordinator.data.get(ATTR_ADDRESS)
@@ -155,6 +164,8 @@ class gooddriverSensorEntity(CoordinatorEntity):
         
         if self.entity_description.key == KEY_PARKING_TIME:
             self._state = self.coordinator.data.get(ATTR_PARKING_TIME)
+        elif self.entity_description.key == KEY_LASTSTOPTIME:
+            self._state = self.coordinator.data.get(ATTR_LASTSTOPTIME)
         elif self.entity_description.key == KEY_ADDRESS:
             if self.coordinator.data.get(ATTR_ADDRESS):                
                 self._state = self.coordinator.data.get(ATTR_ADDRESS)

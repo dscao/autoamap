@@ -38,7 +38,7 @@
 	"selector": {
 		"sensors": {
 			"options": {
-				"last_update": "Last_update",
+				"laststoptime": "Last stop time",
 				"parkingtime": "Parking Time"
 			}
 		}
@@ -113,15 +113,15 @@
 		},
 		"sensor": {
 			"parkingtime": {
-				"name": "parking time",
+				"name": "Parking time",
 				"state_attributes": {
 					"querytime": {
 					  "name": "query time"
 					}
 				}
 			},
-			"last_update": {
-				"name": "last_update"
+			"laststoptime": {
+				"name": "Last Stop time"
 			}
 	    }
 	}

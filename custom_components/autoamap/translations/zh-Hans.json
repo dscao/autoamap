@@ -38,7 +38,7 @@
 	"selector": {
 		"sensors": {
 			"options": {
-				"last_update": "最后更新",
+				"laststoptime": "上次停止时间",
 				"parkingtime": "停车时长"
 			}
 		}
@@ -120,9 +120,9 @@
 					}
 				}
 			},
-			"last_update": {
-				"name": "最后更新"
+			"laststoptime": {
+				"name": "上次停止时间"
 			}
-	    }
+	    }		
 	}
 }

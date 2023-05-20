@@ -22,6 +22,7 @@ from .const import (
     CONF_SENSORS,
     KEY_QUERYTIME,
     KEY_PARKING_TIME,
+    KEY_LASTSTOPTIME,
     KEY_ADDRESS,
 )
 
@@ -154,13 +155,14 @@ class OptionsFlow(config_entries.OptionsFlow):
                         CONF_SENSORS, 
                         default=self.config_entry.options.get(CONF_SENSORS)
                     ): SelectSelector(
-                            SelectSelectorConfig(
-                                options=[
-                                    {"value": KEY_PARKING_TIME, "label": "parkingtime"}
-                                ], 
-                                multiple=True,translation_key=CONF_SENSORS
-                            )
+                        SelectSelectorConfig(
+                            options=[
+                                {"value": KEY_PARKING_TIME, "label": "parkingtime"},
+                            {"value": KEY_LASTSTOPTIME, "label": "laststoptime"}
+                            ], 
+                            multiple=True,translation_key=CONF_SENSORS
                         )
+                    )
                     
                 }
             ),

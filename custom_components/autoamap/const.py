@@ -46,6 +46,7 @@ UNDO_UPDATE_LISTENER = "undo_update_listener"
 KEY_ADDRESS = "address"
 KEY_QUERYTIME = "querytime"
 KEY_PARKING_TIME = "parkingtime"
+KEY_LASTSTOPTIME = "laststoptime"
 
 ATTR_SPEED = "speed"
 ATTR_COURSE = "course"
