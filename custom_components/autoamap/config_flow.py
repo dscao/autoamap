@@ -141,7 +141,7 @@ class OptionsFlow(config_entries.OptionsFlow):
                 {
                     vol.Optional(
                         CONF_UPDATE_INTERVAL,
-                        default=self.config_entry.options.get(CONF_UPDATE_INTERVAL, 90),
+                        default=self.config_entry.options.get(CONF_UPDATE_INTERVAL, 60),
                     ): vol.All(vol.Coerce(int), vol.Range(min=10, max=3600)), 
                     vol.Optional(
                         CONF_GPS_CONVER,

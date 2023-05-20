@@ -61,7 +61,7 @@ SENSOR_TYPES_MAP = { description.key: description for description in SENSOR_TYPE
 
 SENSOR_TYPES_KEYS = { description.key for description in SENSOR_TYPES }
 #_LOGGER.debug("SENSOR_TYPES_KEYS: %s" ,SENSOR_TYPES_KEYS)
-
+SCAN_INTERVAL = datetime.timedelta(seconds=60)
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Add gooddriver entities from a config_entry."""
@@ -149,7 +149,7 @@ class gooddriverSensorEntity(CoordinatorEntity):
         data = self.coordinator.data
         if data:            
             attrs["querytime"] = data["querytime"]        
-        return attrs  
+        return attrs
         
 
     async def async_added_to_hass(self):
@@ -160,8 +160,8 @@ class gooddriverSensorEntity(CoordinatorEntity):
 
     async def async_update(self):
         """Update gooddriver entity."""
-        await self.coordinator.async_request_refresh()
-        
+        _LOGGER.debug("刷新sensor数据")
+        #await self.coordinator.async_request_refresh()
         if self.entity_description.key == KEY_PARKING_TIME:
             self._state = self.coordinator.data.get(ATTR_PARKING_TIME)
         elif self.entity_description.key == KEY_LASTSTOPTIME:
@@ -173,3 +173,5 @@ class gooddriverSensorEntity(CoordinatorEntity):
                 self._state = "unknown"
             
         self._attrs = {ATTR_QUERYTIME: self.coordinator.data["querytime"]}
+        
+        

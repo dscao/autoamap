@@ -43,6 +43,7 @@ from .const import (
 PARALLEL_UPDATES = 1
 _LOGGER = logging.getLogger(__name__)
 
+SCAN_INTERVAL = datetime.timedelta(seconds=60)
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Add autoamap entities from a config_entry."""
@@ -156,7 +157,8 @@ class autoamapEntity(TrackerEntity):
         """Update autoamap entity."""
         #_LOGGER.debug("device tracker_update: %s", self.coordinator.data["MESSAGE"]["HD_STATE_TIME"])
         _LOGGER.debug(datetime.datetime.now(datetime.timezone.utc).astimezone().tzinfo)
-        await self.coordinator.async_request_refresh()
+        _LOGGER.debug("刷新device_tracker数据")
+        #await self.coordinator.async_request_refresh()
         if self._gps_conver == True:
             self._coords = gcj02towgs84(self.coordinator.data["thislon"], self.coordinator.data["thislat"])
         else:
