@@ -46,7 +46,6 @@
 	"entity": {
 		"device_tracker": {
 			"autoamap_device_tracker": {
-				"name": "Autoamap",
 				"state_attributes": {
 					"speed": {
 					  "name": "speed"
@@ -121,7 +120,12 @@
 				}
 			},
 			"laststoptime": {
-				"name": "Last Stop time"
+				"name": "Last Stop time",
+				"state_attributes": {
+					"querytime": {
+					  "name": "query time"
+					}
+				}
 			}
 	    }
 	}

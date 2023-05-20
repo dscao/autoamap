@@ -46,7 +46,6 @@
 	"entity": {
 		"device_tracker": {
 			"autoamap_device_tracker": {
-				"name": "高德地图车机版",
 				"state_attributes": {
 					"speed": {
 					  "name": "当前车速"
@@ -121,8 +120,13 @@
 				}
 			},
 			"laststoptime": {
-				"name": "上次停止时间"
+				"name": "上次停止时间",
+				"state_attributes": {
+					"querytime": {
+					  "name": "查询时间"
+					}
+				}
 			}
-	    }		
+	    }
 	}
 }
