@@ -78,7 +78,11 @@
 					  "name": "查询时间"
 					},
 					"runorstop": {
-					  "name": "运动状态"
+					  "name": "运动状态",
+					  "state": {
+						"stop": "静止",
+						"run": "运动"
+					  }
 					},
 					"laststoptime": {
 					  "name": "上次停止时间"

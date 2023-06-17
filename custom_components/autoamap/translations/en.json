@@ -78,7 +78,11 @@
 					  "name": "query time"
 					},
 					"runorstop": {
-					  "name": "run or stop"
+					  "name": "run or stop",
+					  "state": {
+						"stop": "stop",
+						"run": "moving"
+					  }
 					},
 					"laststoptime": {
 					  "name": "last stop time"
