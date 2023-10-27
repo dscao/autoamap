@@ -102,6 +102,12 @@
 					"longitude": {
 					  "name": "经度"
 					},
+                    "map_gcj_lat": {
+					  "name": "高德地图纬度"
+					},
+					"map_gcj_lng": {
+					  "name": "高德地图经度"
+					},
 					"source_type": {
 					  "name": "数据源",
 					  "state": {

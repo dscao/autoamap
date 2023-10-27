@@ -5,7 +5,7 @@ import time, datetime
 from homeassistant.components.device_tracker.config_entry import TrackerEntity
 from homeassistant.helpers.device_registry import DeviceEntryType
 
-from .helper import gcj02towgs84
+from .helper import gcj02towgs84, wgs84togcj02
 
 from homeassistant.const import (
     CONF_NAME,
@@ -38,6 +38,8 @@ from .const import (
     ATTR_LAST_UPDATE,
     ATTR_QUERYTIME,
     ATTR_PARKING_TIME,
+    CONF_MAP_GCJ_LAT,
+    CONF_MAP_GCJ_LNG,    
 )
 
 PARALLEL_UPDATES = 1
@@ -144,6 +146,13 @@ class autoamapEntity(TrackerEntity):
                 attrs["lastonlinetime"] = data["lastonlinetime"]
                 attrs[ATTR_PARKING_TIME] = data["parkingtime"]  
                 attrs[ATTR_QUERYTIME] = data["querytime"]
+                if self._gps_conver == True:
+                    attrs[CONF_MAP_GCJ_LAT] = self.coordinator.data["thislat"]
+                    attrs[CONF_MAP_GCJ_LNG] = self.coordinator.data["thislon"]
+                else:
+                    gcjdata = wgs84togcj02(self.coordinator.data["thislon"], self.coordinator.data["thislat"])
+                    attrs[CONF_MAP_GCJ_LAT] = gcjdata[1]
+                    attrs[CONF_MAP_GCJ_LNG] = gcjdata[0]
         return attrs    
 
 

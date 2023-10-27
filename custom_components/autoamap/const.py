@@ -30,7 +30,7 @@ from homeassistant.const import (
 ATTR_ICON = "icon"
 ATTR_LABEL = "label"
 MANUFACTURER = "auto.amap.com."
-NAME = "autoamap"
+NAME = "高德地图机车版"
 
 CONF_USER_ID = "user_id"
 CONF_PARAMDATA = "paramdata"
@@ -39,6 +39,8 @@ CONF_GPS_CONVER = "gps_conver"
 CONF_ATTR_SHOW = "attr_show"
 CONF_UPDATE_INTERVAL = "update_interval_seconds"
 CONF_SENSORS = "sensors"
+CONF_MAP_GCJ_LAT = "map_gcj_lat"
+CONF_MAP_GCJ_LNG = "map_gcj_lng"
 
 COORDINATOR = "coordinator"
 UNDO_UPDATE_LISTENER = "undo_update_listener"
@@ -58,3 +60,4 @@ ATTR_LAST_UPDATE = "update_time"
 ATTR_QUERYTIME = "querytime"
 ATTR_PARKING_TIME = "parkingtime"
 ATTR_ADDRESS = "address"
+
