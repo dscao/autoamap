@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+# form https://github.com/wandergis/coordTransform_py/blob/master/coordTransform_utils.py 
+
+
 """Mars coordinates transform"""
 import math
 
@@ -48,7 +51,47 @@ def gcj02towgs84(lng, lat):
     mglat = lat + dlat
     mglng = lng + dlng
     return [lng * 2 - mglng, lat * 2 - mglat]
- 
+
+def gcj02_to_bd09(lng, lat):
+    """
+    火星坐标系(GCJ-02)转百度坐标系(BD-09)
+    谷歌、高德——>百度
+    :param lng:火星坐标经度
+    :param lat:火星坐标纬度
+    :return:
+    """
+    z = math.sqrt(lng * lng + lat * lat) + 0.00002 * math.sin(lat * pi)
+    theta = math.atan2(lat, lng) + 0.000003 * math.cos(lng * pi)
+    bd_lng = z * math.cos(theta) + 0.0065
+    bd_lat = z * math.sin(theta) + 0.006
+    return [bd_lng, bd_lat]
+
+
+def bd09_to_gcj02(bd_lon, bd_lat):
+    """
+    百度坐标系(BD-09)转火星坐标系(GCJ-02)
+    百度——>谷歌、高德
+    :param bd_lat:百度坐标纬度
+    :param bd_lon:百度坐标经度
+    :return:转换后的坐标列表形式
+    """
+    x = bd_lon - 0.0065
+    y = bd_lat - 0.006
+    z = math.sqrt(x * x + y * y) - 0.00002 * math.sin(y * pi)
+    theta = math.atan2(y, x) - 0.000003 * math.cos(x * pi)
+    gg_lng = z * math.cos(theta)
+    gg_lat = z * math.sin(theta)
+    return [gg_lng, gg_lat]
+
+def bd09_to_wgs84(bd_lon, bd_lat):
+    lon, lat = bd09_to_gcj02(bd_lon, bd_lat)
+    return gcj02towgs84(lon, lat)
+
+
+def wgs84_to_bd09(lon, lat):
+    lon, lat = wgs84togcj02(lon, lat)
+    return gcj02_to_bd09(lon, lat)
+    
  
 def transformlat(lng, lat):
     ret = -100.0 + 2.0 * lng + 3.0 * lat + 0.2 * lat * lat + 0.1 * lng * lat + 0.2 * math.sqrt(math.fabs(lng))

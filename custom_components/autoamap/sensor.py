@@ -83,9 +83,7 @@ class gooddriverSensorEntity(CoordinatorEntity):
     """Define an bjtoon_health_code entity."""
     
     _attr_has_entity_name = True
-
-    #_attr_translation_key = "gooddriver_sensor"
-       
+      
     def __init__(self, device_name, description, coordinator):
         """Initialize."""
         super().__init__(coordinator)

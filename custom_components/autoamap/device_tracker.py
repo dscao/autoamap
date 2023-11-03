@@ -1,11 +1,14 @@
 """Support for the autoamap service."""
 import logging
 import time, datetime
-
+import requests
+import re
+import json
+from aiohttp.client_exceptions import ClientConnectorError
 from homeassistant.components.device_tracker.config_entry import TrackerEntity
 from homeassistant.helpers.device_registry import DeviceEntryType
 
-from .helper import gcj02towgs84, wgs84togcj02
+from .helper import gcj02towgs84, wgs84togcj02, gcj02_to_bd09
 
 from homeassistant.const import (
     CONF_NAME,
@@ -38,8 +41,13 @@ from .const import (
     ATTR_LAST_UPDATE,
     ATTR_QUERYTIME,
     ATTR_PARKING_TIME,
+    ATTR_ADDRESS,
+    CONF_ADDRESSAPI,
+    CONF_API_KEY,
     CONF_MAP_GCJ_LAT,
-    CONF_MAP_GCJ_LNG,    
+    CONF_MAP_GCJ_LNG,
+    CONF_MAP_BD_LAT,
+    CONF_MAP_BD_LNG, 
 )
 
 PARALLEL_UPDATES = 1
@@ -52,10 +60,12 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     name = config_entry.data[CONF_NAME]
     gps_conver = config_entry.options.get(CONF_GPS_CONVER, True)
     attr_show = config_entry.options.get(CONF_ATTR_SHOW, True)
+    addressapi = config_entry.options.get(CONF_ADDRESSAPI, "none")
+    api_key = config_entry.options.get(CONF_API_KEY, "")
     coordinator = hass.data[DOMAIN][config_entry.entry_id][COORDINATOR]
     _LOGGER.debug("user_id: %s ,coordinator result: %s", name, coordinator.data)
 
-    async_add_entities([autoamapEntity(name, gps_conver, attr_show, coordinator)], False)
+    async_add_entities([autoamapEntity(hass, name, gps_conver, attr_show, addressapi, api_key, coordinator)], False)
 
 
 class autoamapEntity(TrackerEntity):
@@ -63,8 +73,10 @@ class autoamapEntity(TrackerEntity):
     _attr_has_entity_name = True
     _attr_name = None
     _attr_translation_key = "autoamap_device_tracker"
-    def __init__(self, name, gps_conver, attr_show, coordinator):
-        
+    def __init__(self, hass, name, gps_conver, attr_show, addressapi, api_key, coordinator):
+        self._hass = hass
+        self._addressapi = addressapi
+        self._api_key = api_key
         self.coordinator = coordinator
         _LOGGER.debug("coordinator: %s", coordinator.data)
         self._name = name
@@ -72,6 +84,8 @@ class autoamapEntity(TrackerEntity):
         self._attrs = {}
         self._attr_show = attr_show
         self._coords = []
+        self._coords_old = []
+        self._address = ""
         if self._gps_conver == True:
             self._coords = gcj02towgs84(self.coordinator.data["thislon"], self.coordinator.data["thislat"])
         else:
@@ -146,13 +160,20 @@ class autoamapEntity(TrackerEntity):
                 attrs["lastonlinetime"] = data["lastonlinetime"]
                 attrs[ATTR_PARKING_TIME] = data["parkingtime"]  
                 attrs[ATTR_QUERYTIME] = data["querytime"]
+                attrs[ATTR_ADDRESS] = self._address
                 if self._gps_conver == True:
                     attrs[CONF_MAP_GCJ_LAT] = self.coordinator.data["thislat"]
                     attrs[CONF_MAP_GCJ_LNG] = self.coordinator.data["thislon"]
+                    bddata = gcj02_to_bd09(self.coordinator.data["thislon"], self.coordinator.data["thislat"])
+                    attrs[CONF_MAP_BD_LAT] = bddata[1]
+                    attrs[CONF_MAP_BD_LNG] = bddata[0]
                 else:
                     gcjdata = wgs84togcj02(self.coordinator.data["thislon"], self.coordinator.data["thislat"])
                     attrs[CONF_MAP_GCJ_LAT] = gcjdata[1]
                     attrs[CONF_MAP_GCJ_LNG] = gcjdata[0]
+                    bddata = gcj02_to_bd09(gcjdata[0], gcjdata[1])
+                    attrs[CONF_MAP_BD_LAT] = bddata[1]
+                    attrs[CONF_MAP_BD_LNG] = bddata[0]
         return attrs    
 
 
@@ -168,7 +189,55 @@ class autoamapEntity(TrackerEntity):
         _LOGGER.debug(datetime.datetime.now(datetime.timezone.utc).astimezone().tzinfo)
         _LOGGER.debug("刷新device_tracker数据")
         #await self.coordinator.async_request_refresh()
+        _LOGGER.debug(self._addressapi)
         if self._gps_conver == True:
             self._coords = gcj02towgs84(self.coordinator.data["thislon"], self.coordinator.data["thislat"])
         else:
             self._coords = [self.coordinator.data["thislon"], self.coordinator.data["thislat"]]
+            
+        if self._coords_old != self._coords:
+            try: 
+                if self._addressapi == "baidu" and self._api_key:
+                    _LOGGER.debug("baidu:"+self._api_key)
+                    addressdata = await self._hass.async_add_executor_job(self.get_baidu_geocoding, self._coords[1], self._coords[0])
+                    self._address = addressdata['result']['formatted_address'] + addressdata['result']['sematic_description']
+                    self._coords_old = self._coords
+                elif self._addressapi == "gaode" and self._api_key:
+                    _LOGGER.debug("gaode:"+self._api_key)
+                    gcjdata = wgs84togcj02(self._coords[0], self._coords[1])
+                    addressdata = await self._hass.async_add_executor_job(self.get_gaode_geocoding, gcjdata[1], gcjdata[0])
+                    self._address = addressdata['regeocode']['formatted_address']
+                    self._coords_old = self._coords
+                else:
+                    self._address = ""                
+                _LOGGER.debug(self._coords_old)
+            except (
+                ClientConnectorError
+            ) as error:
+                self._address = self._address or ""
+                raise UpdateFailed(error)
+                
+    def get_data(self, url):
+        json_text = requests.get(url).content
+        json_text = json_text.decode('utf-8')
+        json_text = re.sub(r'\\','',json_text)
+        json_text = re.sub(r'"{','{',json_text)
+        json_text = re.sub(r'}"','}',json_text)
+        resdata = json.loads(json_text)
+        return resdata
+            
+    def get_baidu_geocoding(self, lat, lng):
+        api_url = 'https://api.map.baidu.com/reverse_geocoding/v3/'
+        location = str("{:.6f}".format(lat))+','+str("{:.6f}".format(lng))
+        url = api_url+'?ak='+self._api_key+'&output=json&coordtype=wgs84ll&extensions_poi=1&location='+location       
+        response = self.get_data(url)
+        _LOGGER.debug(response)
+        return response
+        
+    def get_gaode_geocoding(self, lat, lng):
+        api_url = 'https://restapi.amap.com/v3/geocode/regeo'
+        location = str("{:.6f}".format(lng))+','+str("{:.6f}".format(lat))
+        url = api_url+'?key='+self._api_key+'&output=json&coordinate=wgs84&extensions=base&location='+location       
+        response = self.get_data(url)
+        _LOGGER.debug(response)
+        return response

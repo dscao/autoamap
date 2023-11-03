@@ -24,6 +24,8 @@ from .const import (
     KEY_PARKING_TIME,
     KEY_LASTSTOPTIME,
     KEY_ADDRESS,
+    CONF_ADDRESSAPI,
+    CONF_API_KEY,
 )
 
 import voluptuous as vol
@@ -91,7 +93,7 @@ class FlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     async def _show_config_form(self, user_input):
 
         # Defaults
-        device_name = "autoamap"
+        device_name = "高德地图机车版"
         data_schema = OrderedDict()
         data_schema[vol.Required(CONF_NAME, default=device_name)] = str
         data_schema[vol.Required(CONF_API_KEY ,default ="9o1XKgwxxxxwkQ%2xxxxxxxx%3D&csid=836EXXXX-XXXX-XXXX-XXXX-XXXXXX")] = str
@@ -153,17 +155,33 @@ class OptionsFlow(config_entries.OptionsFlow):
                     ): bool,
                     vol.Optional(
                         CONF_SENSORS, 
-                        default=self.config_entry.options.get(CONF_SENSORS)
+                        default=self.config_entry.options.get(CONF_SENSORS,[])
                     ): SelectSelector(
                         SelectSelectorConfig(
                             options=[
                                 {"value": KEY_PARKING_TIME, "label": "parkingtime"},
-                            {"value": KEY_LASTSTOPTIME, "label": "laststoptime"}
+                                {"value": KEY_LASTSTOPTIME, "label": "laststoptime"}
                             ], 
                             multiple=True,translation_key=CONF_SENSORS
                         )
-                    )
-                    
+                    ),
+                    vol.Optional(
+                        CONF_ADDRESSAPI, 
+                        default=self.config_entry.options.get(CONF_ADDRESSAPI,"none")
+                    ): SelectSelector(
+                        SelectSelectorConfig(
+                            options=[
+                                {"value": "none", "label": "none"},
+                                {"value": "baidu", "label": "baidu"},
+                                {"value": "gaode", "label": "gaode"}
+                            ], 
+                            multiple=False,translation_key=CONF_ADDRESSAPI
+                        )
+                    ),                    
+                    vol.Optional(
+                        CONF_API_KEY, 
+                        default=self.config_entry.options.get(CONF_API_KEY,"")
+                    ): str,                    
                 }
             ),
         )

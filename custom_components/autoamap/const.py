@@ -10,7 +10,7 @@ REQUIRED_FILES = [
     "translations/en.json",
     "translations/zh-Hans.json",
 ]
-VERSION = "2023.5.19"
+VERSION = "2023.11.3"
 ISSUE_URL = "https://github.com/dscao/autoamap/issues"
 
 STARTUP = """
@@ -41,6 +41,10 @@ CONF_UPDATE_INTERVAL = "update_interval_seconds"
 CONF_SENSORS = "sensors"
 CONF_MAP_GCJ_LAT = "map_gcj_lat"
 CONF_MAP_GCJ_LNG = "map_gcj_lng"
+CONF_MAP_BD_LAT = "map_bd_lat"
+CONF_MAP_BD_LNG = "map_bd_lng"
+CONF_ADDRESSAPI = "addressapi"
+CONF_API_KEY = "api_key"
 
 COORDINATOR = "coordinator"
 UNDO_UPDATE_LISTENER = "undo_update_listener"

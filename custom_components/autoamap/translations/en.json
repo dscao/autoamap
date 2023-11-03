@@ -29,7 +29,9 @@
                     "attr_show": "Attributes showing parking time and more",
 					"gps_conver": "conver gps from GJC02 to GPS84",
 					"update_interval_seconds": "Update_interval(10-3600 seconds)",
-					"sensors": "Sensors"
+					"sensors": "Sensors",
+                    "addressapi": "Address acquisition interface, please register before using the API: [Amap](https://lbs.amap.com/dev/key) ， [Baidu](https://lbsyun.baidu.com/) 。",
+                    "api_key": "Interface key, if it is empty, the address will not be obtained."
                 },
                 "description": "Set Entity Attributes"
             }
@@ -40,6 +42,13 @@
 			"options": {
 				"laststoptime": "Last stop time",
 				"parkingtime": "Parking Time"
+			}
+		},
+        "addressapi": {
+			"options": {
+                "none": "none",
+				"baidu": "baidu",
+				"gaode": "gaode"
 			}
 		}
 	},
@@ -92,6 +101,9 @@
 					},
 					"battery": {
 					  "name": "battery"
+					},
+                    "address": {
+					  "name": "address"
 					},
 					"gps_accuracy": {
 					  "name": "gps accuracy"
