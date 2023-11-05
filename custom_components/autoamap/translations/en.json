@@ -31,7 +31,8 @@
 					"update_interval_seconds": "Update_interval(10-3600 seconds)",
 					"sensors": "Sensors",
                     "addressapi": "Address acquisition interface, please register before using the API: [Amap](https://lbs.amap.com/dev/key) ， [Baidu](https://lbsyun.baidu.com/) 。",
-                    "api_key": "Interface key, if it is empty, the address will not be obtained."
+                    "api_key": "Interface key, if it is empty, the address will not be obtained.",
+                    "private_key": "Private key"
                 },
                 "description": "Set Entity Attributes"
             }
@@ -47,6 +48,7 @@
         "addressapi": {
 			"options": {
                 "none": "none",
+                "free": "free",
 				"baidu": "baidu",
 				"gaode": "gaode"
 			}

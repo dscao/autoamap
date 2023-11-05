@@ -4,6 +4,9 @@ import time, datetime
 import requests
 import re
 import json
+import hashlib
+import urllib.parse
+
 from aiohttp.client_exceptions import ClientConnectorError
 from homeassistant.components.device_tracker.config_entry import TrackerEntity
 from homeassistant.helpers.device_registry import DeviceEntryType
@@ -44,6 +47,7 @@ from .const import (
     ATTR_ADDRESS,
     CONF_ADDRESSAPI,
     CONF_API_KEY,
+    CONF_PRIVATE_KEY,
     CONF_MAP_GCJ_LAT,
     CONF_MAP_GCJ_LNG,
     CONF_MAP_BD_LAT,
@@ -62,10 +66,11 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     attr_show = config_entry.options.get(CONF_ATTR_SHOW, True)
     addressapi = config_entry.options.get(CONF_ADDRESSAPI, "none")
     api_key = config_entry.options.get(CONF_API_KEY, "")
+    private_key = config_entry.options.get(CONF_PRIVATE_KEY, "")
     coordinator = hass.data[DOMAIN][config_entry.entry_id][COORDINATOR]
     _LOGGER.debug("user_id: %s ,coordinator result: %s", name, coordinator.data)
 
-    async_add_entities([autoamapEntity(hass, name, gps_conver, attr_show, addressapi, api_key, coordinator)], False)
+    async_add_entities([autoamapEntity(hass, name, gps_conver, attr_show, addressapi, api_key, private_key, coordinator)], False)
 
 
 class autoamapEntity(TrackerEntity):
@@ -73,10 +78,11 @@ class autoamapEntity(TrackerEntity):
     _attr_has_entity_name = True
     _attr_name = None
     _attr_translation_key = "autoamap_device_tracker"
-    def __init__(self, hass, name, gps_conver, attr_show, addressapi, api_key, coordinator):
+    def __init__(self, hass, name, gps_conver, attr_show, addressapi, api_key, private_key, coordinator):
         self._hass = hass
         self._addressapi = addressapi
         self._api_key = api_key
+        self._private_key = private_key
         self.coordinator = coordinator
         _LOGGER.debug("coordinator: %s", coordinator.data)
         self._name = name
@@ -200,13 +206,29 @@ class autoamapEntity(TrackerEntity):
                 if self._addressapi == "baidu" and self._api_key:
                     _LOGGER.debug("baidu:"+self._api_key)
                     addressdata = await self._hass.async_add_executor_job(self.get_baidu_geocoding, self._coords[1], self._coords[0])
-                    self._address = addressdata['result']['formatted_address'] + addressdata['result']['sematic_description']
+                    if addressdata['status'] == 0:
+                        self._address = addressdata['result']['formatted_address'] + addressdata['result']['sematic_description']
+                    else:
+                        self._address = addressdata['message']
                     self._coords_old = self._coords
                 elif self._addressapi == "gaode" and self._api_key:
                     _LOGGER.debug("gaode:"+self._api_key)
                     gcjdata = wgs84togcj02(self._coords[0], self._coords[1])
                     addressdata = await self._hass.async_add_executor_job(self.get_gaode_geocoding, gcjdata[1], gcjdata[0])
-                    self._address = addressdata['regeocode']['formatted_address']
+                    if addressdata['status'] == "1":
+                        self._address = addressdata['regeocode']['formatted_address']
+                    else: 
+                        self._address = addressdata['info']
+                    self._coords_old = self._coords
+                elif self._addressapi == "free":
+                    _LOGGER.debug("free")
+                    gcjdata = wgs84togcj02(self._coords[0], self._coords[1])
+                    bddata = gcj02_to_bd09(gcjdata[0], gcjdata[1])
+                    addressdata = await self._hass.async_add_executor_job(self.get_free_geocoding, bddata[1], bddata[0])
+                    if addressdata['status'] == 'OK':
+                        self._address = addressdata['result']['formatted_address']
+                    else:
+                        self._address = 'free接口返回错误'
                     self._coords_old = self._coords
                 else:
                     self._address = ""                
@@ -226,18 +248,50 @@ class autoamapEntity(TrackerEntity):
         resdata = json.loads(json_text)
         return resdata
             
+    def get_free_geocoding(self, lat, lng):
+        api_url = 'https://api.map.baidu.com/geocoder'
+        location = str("{:.6f}".format(lat))+','+str("{:.6f}".format(lng))
+        url = api_url+'?&output=json&location='+location
+        _LOGGER.debug(url)
+        response = self.get_data(url)
+        _LOGGER.debug(response)
+        return response
+
     def get_baidu_geocoding(self, lat, lng):
         api_url = 'https://api.map.baidu.com/reverse_geocoding/v3/'
         location = str("{:.6f}".format(lat))+','+str("{:.6f}".format(lng))
-        url = api_url+'?ak='+self._api_key+'&output=json&coordtype=wgs84ll&extensions_poi=1&location='+location       
+        sn = ''
+        if self._private_key:
+            params = '/reverse_geocoding/v3/?ak='+self._api_key+'&output=json&coordtype=wgs84ll&extensions_poi=1&location='+location
+            sn = self.baidu_sn(params, self._private_key)
+        url = api_url+'?ak='+self._api_key+'&output=json&coordtype=wgs84ll&extensions_poi=1&location='+location+'&sn='+sn
+        _LOGGER.debug(url)
         response = self.get_data(url)
         _LOGGER.debug(response)
         return response
-        
+    
     def get_gaode_geocoding(self, lat, lng):
         api_url = 'https://restapi.amap.com/v3/geocode/regeo'
-        location = str("{:.6f}".format(lng))+','+str("{:.6f}".format(lat))
-        url = api_url+'?key='+self._api_key+'&output=json&coordinate=wgs84&extensions=base&location='+location       
+        location = str("{:.6f}".format(lng))+','+str("{:.6f}".format(lat))        
+        sig = ''
+        if self._private_key:
+            params = {'key': self._api_key, 'output': 'json', 'extensions': 'base', 'location': location}
+            sig = self.generate_signature(params, self._private_key)
+        url = api_url+'?key='+self._api_key+'&output=json&extensions=base&location='+location+'&sig='+sig
+        _LOGGER.debug(url)
         response = self.get_data(url)
         _LOGGER.debug(response)
         return response
+
+    def generate_signature(self, params, private_key):
+        sorted_params = sorted(params.items(), key=lambda x: x[0])  # 按参数名的升序排序
+        param_str = '&'.join([f'{key}={value}' for key, value in sorted_params])  # 构建参数字符串
+        param_str += private_key  # 加私钥
+        signature = hashlib.md5(param_str.encode()).hexdigest()  # 计算MD5摘要
+        return signature  #根据私钥计算出web服务数字签名
+        
+    def baidu_sn(self, params, private_key):
+        param_str = urllib.parse.quote(params, safe="/:=&?#+!$,;'@()*[]")
+        param_str += private_key  # 加私钥
+        signature = hashlib.md5(urllib.parse.quote_plus(param_str).encode()).hexdigest()  # 计算MD5摘要
+        return signature  #根据私钥计算出web服务数字签名

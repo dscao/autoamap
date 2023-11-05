@@ -8,5 +8,5 @@
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/dscao/autoamap/issues",  
   "requirements": [],
-  "version": "2023.11.3"
+  "version": "2023.11.5"
 }

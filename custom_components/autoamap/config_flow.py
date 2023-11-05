@@ -26,6 +26,7 @@ from .const import (
     KEY_ADDRESS,
     CONF_ADDRESSAPI,
     CONF_API_KEY,
+    CONF_PRIVATE_KEY,
 )
 
 import voluptuous as vol
@@ -172,6 +173,7 @@ class OptionsFlow(config_entries.OptionsFlow):
                         SelectSelectorConfig(
                             options=[
                                 {"value": "none", "label": "none"},
+                                {"value": "free", "label": "free"},
                                 {"value": "baidu", "label": "baidu"},
                                 {"value": "gaode", "label": "gaode"}
                             ], 
@@ -181,7 +183,11 @@ class OptionsFlow(config_entries.OptionsFlow):
                     vol.Optional(
                         CONF_API_KEY, 
                         default=self.config_entry.options.get(CONF_API_KEY,"")
-                    ): str,                    
+                    ): str,
+                    vol.Optional(
+                        CONF_PRIVATE_KEY, 
+                        default=self.config_entry.options.get(CONF_PRIVATE_KEY,"")
+                    ): str,
                 }
             ),
         )
