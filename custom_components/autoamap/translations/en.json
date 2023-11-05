@@ -30,7 +30,7 @@
 					"gps_conver": "conver gps from GJC02 to GPS84",
 					"update_interval_seconds": "Update_interval(10-3600 seconds)",
 					"sensors": "Sensors",
-                    "addressapi": "Address acquisition interface, please register before using the API: [Amap](https://lbs.amap.com/dev/key) ， [Baidu](https://lbsyun.baidu.com/) 。",
+                    "addressapi": "Address acquisition interface, please register before using the API: [Amap](https://lbs.amap.com/dev/key) ， [Baidu](https://lbsyun.baidu.com/) ， [Tencent WebServiceAPI Key](https://lbs.qq.com/dev/console/application/mine)  。",
                     "api_key": "Interface key, if it is empty, the address will not be obtained.",
                     "private_key": "Private key"
                 },
@@ -49,8 +49,9 @@
 			"options": {
                 "none": "none",
                 "free": "free",
+				"gaode": "gaode",
 				"baidu": "baidu",
-				"gaode": "gaode"
+				"tencent": "tencent"
 			}
 		}
 	},

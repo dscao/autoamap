@@ -30,9 +30,9 @@
 					"gps_conver": "原始数据为GCJ02(火星坐标系)，坐标转化为GPS84",
 					"update_interval_seconds": "更新间隔时间(10-3600秒),建议设为90",
 					"sensors": "传感器",
-                    "addressapi": "地址获取接口，使用 API 前请您先注册: [高德账号web服务key](https://lbs.amap.com/dev/key) , [百度账号服务端AK](https://lbsyun.baidu.com/apiconsole/key) 。",
-                    "api_key": "接口密钥，为空时不获取地址",
-                    "private_key": "数字签名时填写，否则留空。高德为安全密钥的私钥值，百度为sn校验方式SK值。"
+                    "addressapi": "地址获取接口，使用 API 前请您先注册: [高德账号web服务key](https://lbs.amap.com/dev/key) , [百度账号服务端AK](https://lbsyun.baidu.com/apiconsole/key)  , [腾讯WebServiceAPI Key](https://lbs.qq.com/dev/console/application/mine) 。",
+                    "api_key": "接口密钥，除免api_key接口外，为空时不获取地址",
+                    "private_key": "数字签名时填写，否则留空。高德为安全密钥的私钥值，百度为sn校验方式SK值，腾讯为签名校验SK。"
                 },
                 "description": "更多可选设置"
             }
@@ -49,8 +49,9 @@
 			"options": {
                 "none": "不获取地址",
                 "free": "免api_key获取基础地理信息",
+				"gaode": "高德地图逆地理接口",
 				"baidu": "百度地图逆地理接口",
-				"gaode": "高德地图逆地理接口"
+				"tencent": "腾讯地图逆地理接口"
 			}
 		}
 	},

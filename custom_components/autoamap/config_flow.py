@@ -174,8 +174,9 @@ class OptionsFlow(config_entries.OptionsFlow):
                             options=[
                                 {"value": "none", "label": "none"},
                                 {"value": "free", "label": "free"},
+                                {"value": "gaode", "label": "gaode"},
                                 {"value": "baidu", "label": "baidu"},
-                                {"value": "gaode", "label": "gaode"}
+                                {"value": "tencent", "label": "tencent"}
                             ], 
                             multiple=False,translation_key=CONF_ADDRESSAPI
                         )

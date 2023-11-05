@@ -220,6 +220,15 @@ class autoamapEntity(TrackerEntity):
                     else: 
                         self._address = addressdata['info']
                     self._coords_old = self._coords
+                elif self._addressapi == "tencent" and self._api_key:
+                    _LOGGER.debug("tencent:"+self._api_key)
+                    gcjdata = wgs84togcj02(self._coords[0], self._coords[1])
+                    addressdata = await self._hass.async_add_executor_job(self.get_tencent_geocoding, gcjdata[1], gcjdata[0])
+                    if addressdata['status'] == 0:
+                        self._address = addressdata['result']['formatted_addresses']['recommend']
+                    else: 
+                        self._address = addressdata['message']
+                    self._coords_old = self._coords
                 elif self._addressapi == "free":
                     _LOGGER.debug("free")
                     gcjdata = wgs84togcj02(self._coords[0], self._coords[1])
@@ -252,6 +261,19 @@ class autoamapEntity(TrackerEntity):
         api_url = 'https://api.map.baidu.com/geocoder'
         location = str("{:.6f}".format(lat))+','+str("{:.6f}".format(lng))
         url = api_url+'?&output=json&location='+location
+        _LOGGER.debug(url)
+        response = self.get_data(url)
+        _LOGGER.debug(response)
+        return response
+        
+    def get_tencent_geocoding(self, lat, lng):
+        api_url = 'https://apis.map.qq.com/ws/geocoder/v1/'
+        location = str("{:.6f}".format(lat))+','+str("{:.6f}".format(lng))
+        sk = ''
+        if self._private_key:
+            params = '/ws/geocoder/v1/?get_poi=1&key='+self._api_key+'&location='+location+'&output=json'
+            sig = self.tencent_sk(params, self._private_key)
+        url = api_url+'?key='+self._api_key+'&output=json&get_poi=1&location='+location+'&sig='+sig
         _LOGGER.debug(url)
         response = self.get_data(url)
         _LOGGER.debug(response)
@@ -292,6 +314,11 @@ class autoamapEntity(TrackerEntity):
         
     def baidu_sn(self, params, private_key):
         param_str = urllib.parse.quote(params, safe="/:=&?#+!$,;'@()*[]")
-        param_str += private_key  # 加私钥
-        signature = hashlib.md5(urllib.parse.quote_plus(param_str).encode()).hexdigest()  # 计算MD5摘要
-        return signature  #根据私钥计算出web服务数字签名
+        param_str += private_key
+        signature = hashlib.md5(urllib.parse.quote_plus(param_str).encode()).hexdigest()
+        return signature
+        
+    def tencent_sk(self, params, private_key):
+        param_str = params + private_key
+        signature = hashlib.md5(param_str.encode()).hexdigest()
+        return signature
