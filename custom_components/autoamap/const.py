@@ -44,7 +44,7 @@ CONF_MAP_GCJ_LNG = "map_gcj_lng"
 CONF_MAP_BD_LAT = "map_bd_lat"
 CONF_MAP_BD_LNG = "map_bd_lng"
 CONF_ADDRESSAPI = "addressapi"
-CONF_API_KEY = "api_key"
+CONF_ADDRESSAPI_KEY = "api_key"
 CONF_PRIVATE_KEY = "private_key"
 
 COORDINATOR = "coordinator"

@@ -5,7 +5,7 @@ Github        : https://github.com/dscao
 Description   : 
 Date          : 2022-05-13
 LastEditors   : dscao
-LastEditTime  : 2022-05-16
+LastEditTime  : 2023-11-16
 '''
 """
 name: 'autoamap'
@@ -80,7 +80,7 @@ from .const import (
 )
 
 TYPE_GEOFENCE = "Geofence"
-__version__ = '2023.5.20'
+__version__ = '2023.11.16'
 
 _LOGGER = logging.getLogger(__name__)   
     

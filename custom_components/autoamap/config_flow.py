@@ -25,7 +25,7 @@ from .const import (
     KEY_LASTSTOPTIME,
     KEY_ADDRESS,
     CONF_ADDRESSAPI,
-    CONF_API_KEY,
+    CONF_ADDRESSAPI_KEY,
     CONF_PRIVATE_KEY,
 )
 
@@ -98,7 +98,7 @@ class FlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         data_schema = OrderedDict()
         data_schema[vol.Required(CONF_NAME, default=device_name)] = str
         data_schema[vol.Required(CONF_API_KEY ,default ="9o1XKgwxxxxwkQ%2xxxxxxxx%3D&csid=836EXXXX-XXXX-XXXX-XXXX-XXXXXX")] = str
-        data_schema[vol.Required(CONF_USER_ID ,default ="xr42asymuuwtqiq5spddbei4cmgnprd7")] = str
+        data_schema[vol.Required(CONF_USER_ID ,default ="xr42xxxxxxxxxxxxxxxxxxxxxxxxprd7")] = str
         data_schema[vol.Required(CONF_PARAMDATA ,default ="oMYpxxxxxxxxxxxx")] = str
         data_schema[vol.Required(CONF_XUHAO ,default =0 )] = int
 
@@ -182,8 +182,8 @@ class OptionsFlow(config_entries.OptionsFlow):
                         )
                     ),                    
                     vol.Optional(
-                        CONF_API_KEY, 
-                        default=self.config_entry.options.get(CONF_API_KEY,"")
+                        CONF_ADDRESSAPI_KEY, 
+                        default=self.config_entry.options.get(CONF_ADDRESSAPI_KEY,"")
                     ): str,
                     vol.Optional(
                         CONF_PRIVATE_KEY, 

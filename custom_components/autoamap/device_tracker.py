@@ -46,7 +46,7 @@ from .const import (
     ATTR_PARKING_TIME,
     ATTR_ADDRESS,
     CONF_ADDRESSAPI,
-    CONF_API_KEY,
+    CONF_ADDRESSAPI_KEY,
     CONF_PRIVATE_KEY,
     CONF_MAP_GCJ_LAT,
     CONF_MAP_GCJ_LNG,
@@ -65,7 +65,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     gps_conver = config_entry.options.get(CONF_GPS_CONVER, True)
     attr_show = config_entry.options.get(CONF_ATTR_SHOW, True)
     addressapi = config_entry.options.get(CONF_ADDRESSAPI, "none")
-    api_key = config_entry.options.get(CONF_API_KEY, "")
+    api_key = config_entry.options.get(CONF_ADDRESSAPI_KEY, "")
     private_key = config_entry.options.get(CONF_PRIVATE_KEY, "")
     coordinator = hass.data[DOMAIN][config_entry.entry_id][COORDINATOR]
     _LOGGER.debug("user_id: %s ,coordinator result: %s", name, coordinator.data)
