@@ -5,7 +5,7 @@ Github        : https://github.com/dscao
 Description   : 
 Date          : 2022-05-13
 LastEditors   : dscao
-LastEditTime  : 2023-11-16
+LastEditTime  : 2024-8-8
 '''
 """
 name: 'autoamap'
@@ -53,7 +53,8 @@ from homeassistant.util import slugify
 from homeassistant.helpers.event import track_utc_time_change
 from homeassistant.util import slugify
 from homeassistant.util.location import distance
-from homeassistant.util.json import save_json, load_json
+from homeassistant.util.json import load_json
+from homeassistant.helpers.json import save_json
 
 from homeassistant.const import (
     Platform,
