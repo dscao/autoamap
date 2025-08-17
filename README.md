@@ -4,6 +4,8 @@
 ![visit](https://visitor-badge.glitch.me/badge?page_id=dscao.autoamap&left_text=visit)
 
  高德地图车机版 for homeassistant
+
+已由 https://github.com/dscao/cloud_gps 替代相关功能
  
 New features in version 2023
 
